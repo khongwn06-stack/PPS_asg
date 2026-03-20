@@ -1,11 +1,11 @@
 #include <iostream>
 #include <unistd.h> //use sleep() for loading screen
 #include <cstdlib>
-#include <limits>
+#include <limits> //limited output after enter Alphabet
 
 using namespace std;
 
-//Main Menu
+//Login Part
 bool home_page();
 
 //Student Part
@@ -26,17 +26,16 @@ void limit_input();
 void clear_screen(); //clear sreen after move to the new page
 void loading_screen(); //loading for 3 second 
 
+//Main Menu
 int main()
 {
 	home_page();
-	
 	return 0;
 }
 
 //Addition
-void limit_input(){
-	if(cin.fail())
-	{
+void limit_input(){ //limited output after enter Alphabet
+	if(cin.fail()){
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 	}
@@ -56,7 +55,7 @@ void loading_screen(){
     cout<<"\nDone!"<<endl;
 }
 
-//Main Menu
+//Login Part
 bool home_page()
 {
 	int homeChoice;
@@ -82,6 +81,7 @@ bool home_page()
 	}while (homeChoice != 4);
 }
 
+//Student Part
 void newReg_page(){
 	cout<<"New Registration Page"<<endl;
 }
@@ -89,6 +89,7 @@ void stud_page(){
 	cout<<"Student Page"<<endl;
 }
 
+//Admin Part
 bool admin_page()
 {
 	loading_screen();
@@ -128,6 +129,7 @@ void report(){
 	cout<<"Reports"<<endl;
 }
 
+//Exit System
 void exit_system(){
 	loading_screen();
 	cout<<"\nHave A Good Day! Thank You!"<<endl;
