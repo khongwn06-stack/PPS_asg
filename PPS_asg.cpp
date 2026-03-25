@@ -9,11 +9,11 @@ using namespace std;
 bool home_page();
 
 //Student Part
-void newReg();
-void stud_login();
+void newReg_page();
+void stud_page();
 
 //Admin Part
-bool admin_login();
+bool admin_page();
 void app_approval();
 void analytic();
 void report();
@@ -64,17 +64,17 @@ bool home_page()
 	cout<<"\nUTAR Monthly Car Parking Pass System"<<endl<<endl;
 	cout<<"--------Home Page--------"<<endl<<endl;
 	cout<<"Select an option : "<<endl;
-	cout<<"1. New Registration"<<endl;
-	cout<<"2. Student Login"<<endl;
-	cout<<"3. Admin Login"<<endl;
+	cout<<"1. New Registration Page"<<endl;
+	cout<<"2. Student Page"<<endl;
+	cout<<"3. Admin Page"<<endl;
 	cout<<"4. Exit System"<<endl<<endl;
 	cout<<"Enter your option : ";
 	cin>>homeChoice;
 	
 	switch(homeChoice){
-		case 1: newReg(); break;
-		case 2: stud_login(); break;
-		case 3: admin_login(); break;
+		case 1: newReg_page(); break;
+		case 2: stud_page(); break;
+		case 3: admin_page(); break;
 		case 4: exit_system(); break;
 		default:limit_input(); cout<<"Invalid Option! Please Enter the Number 1-4."<<endl;
 	}
@@ -82,15 +82,15 @@ bool home_page()
 }
 
 //Student Part
-void newReg(){
+void newReg_page(){
 	cout<<"New Registration Page"<<endl;
 }
-void stud_login(){
+void stud_page(){
 	cout<<"Student Page"<<endl;
 }
 
 //Admin Part
-bool admin_login()
+bool admin_page()
 {
 	loading_screen();
 	
