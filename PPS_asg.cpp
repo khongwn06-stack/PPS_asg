@@ -9,6 +9,10 @@ using namespace std;
 //Login Part
 bool home_page();
 
+//Txt file
+char generatePassID();
+void createPass();
+
 //Student Part
 void newReg_page();
 void stud_page();
@@ -16,6 +20,7 @@ void stud_page();
 //Admin Part
 bool admin_login();
 bool admin_page();
+void view_app();
 void app_approval();
 void analytic();
 void report();
@@ -139,26 +144,32 @@ bool admin_page()
 	cout<<"----------Admin Page----------"<<endl;
 	do{
 		cout<<"\nSelect an option : "<<endl;
-		cout<<"1. Application Approval"<<endl;
-		cout<<"2. Analytics"<<endl;
-		cout<<"3. Reports"<<endl;
-		cout<<"4. Back to Home Page"<<endl;
-		cout<<"5. Exit System"<<endl<<endl;
+		cout<<"1. View Application"<<endl;
+		cout<<"2. Application Approval"<<endl;
+		cout<<"3. Analytics"<<endl;
+		cout<<"4. Reports"<<endl;
+		cout<<"5. Back to Home Page"<<endl;
+		cout<<"6. Exit System"<<endl<<endl;
 		
 		cout<<"Enter your option : ";
 		cin>>adminChoice;
 		
 		switch(adminChoice){
-			case 1: app_approval(); break;
-			case 2: analytic(); break;
-			case 3: report(); break;
-			case 4:	loading_screen(); clear_screen(); home_page(); break;
-			case 5: exit_system(); break;
-			default:limit_input(); cout<<"Invalid Option! Please Enter the Number 1-5."<<endl;
+			case 1: view_app(); break;
+			case 2: app_approval(); break;
+			case 3: analytic(); break;
+			case 4: report(); break;
+			case 5:	loading_screen(); clear_screen(); home_page(); break;
+			case 6: exit_system(); break; 
+			default:limit_input(); cout<<"Invalid Option! Please Enter the Number 1-6."<<endl;
 		}
-	}while (adminChoice != 5);
+	}while (adminChoice != 6);
 }
 
+
+void view_app(){
+	cout<<"View Application"<<endl;
+}
 void app_approval(){
 	cout<<"Application Approval"<<endl;
 }
