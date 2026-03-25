@@ -2,9 +2,8 @@
 #include <unistd.h> //use sleep() for loading screen
 #include <cstdlib>
 #include <limits> //limited output after enter Alphabet
-#include <fstream>
-#include <sstream>
-
+#include <fstream> //use ifstream(input txt file stream) and ofstream(output txt file stream)
+#include <sstream> //extracting data from a txt file
 using namespace std;
 
 //Login Part
@@ -17,7 +16,6 @@ void stud_page();
 //Admin Part
 bool admin_login();
 bool admin_page();
-
 void app_approval();
 void analytic();
 void report();
