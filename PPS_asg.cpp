@@ -97,7 +97,7 @@ bool admin_login()
 	string id, username, password;
 	string adminUsername, adminPassword;
 
-	cout<<"\n---------Admin Login---------"<<endl<<endl;
+	cout<<"\n\n---------Admin Login---------"<<endl<<endl;
 	do{
 		cout<<"Username: ";
 		cin>>adminUsername;
