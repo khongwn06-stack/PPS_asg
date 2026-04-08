@@ -10,7 +10,7 @@ using namespace std;
 //Admin Part
 void view_app();
 void app_approval();
-void analytic();
+void gnr_analytic();
 void report();
 
 
@@ -24,8 +24,12 @@ int main()
 		cout<<"\nSelect an option : "<<endl;
 		cout<<"1. View Application"<<endl;
 		cout<<"2. Application Approval"<<endl;
+<<<<<<< HEAD
 		//cout<<"3. Monthly Pass Approval"<<endl;
 		cout<<"3. Analytics"<<endl;
+=======
+		cout<<"3. Generate Analytics"<<endl;
+>>>>>>> 60efb05 (changing)
 		cout<<"4. Reports"<<endl;
 		cout<<"5. Exit"<<endl;
 		
@@ -35,8 +39,12 @@ int main()
 		switch(adminChoice){
 			case 1: view_app(); break;
 			case 2: app_approval(); break;
+<<<<<<< HEAD
 			//case 3: mPass_approval(); break;
 			case 3: analytic(); break;
+=======
+			case 3: gnr_analytic(); break;
+>>>>>>> 60efb05 (changing)
 			case 4: report(); break; 
 			case 5: break;
 			default: cout<<"Invalid Option! Please Enter the Number."<<endl;
@@ -73,7 +81,12 @@ void app_approval(){
 	/* if approve
 		-
 	   if reject 	
+<<<<<<< HEAD
 		- studID cannot be found in the txt (student detail)  */
+=======
+		- cannot be found in the student.txt (student detail)  
+		- last payment not completed */
+>>>>>>> 60efb05 (changing)
 		
     do{
     	cout<<"Approve or Reject (A/R): ";
@@ -117,6 +130,7 @@ void app_approval(){
 //	}
 }
 
+<<<<<<< HEAD
 void mPass_approval(){
 	cout<<"----------Monthly Pass Approval----------"<<endl;
 	
@@ -128,6 +142,11 @@ void mPass_approval(){
 
 void analytic(){
 	cout<<"Analytics"<<endl;
+=======
+
+void gnr_analytic(){
+	cout<<"Generate Analytics"<<endl;
+>>>>>>> 60efb05 (changing)
 }
 void report(){
 	cout<<"Reports"<<endl;
