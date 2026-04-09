@@ -1,37 +1,155 @@
 #include <iostream>
 #include <unistd.h> //use sleep() for loading screen
 #include <cstdlib>
-#include <limits>  //limited output after enter Alphabet
-#include <fstream> //required ifstream(input txt file stream) and ofstream(output txt file stream)
+#include <limits> //limited output after enter Alphabet
+#include <fstream> //use ifstream(input txt file stream) and ofstream(output txt file stream)
 #include <sstream> //extracting data from a txt file
-#include <string>  //required for the string type used with getline()
 using namespace std;
 
+//Login Part
+bool home_page();
+
+//Txt file
+char generatePassID();
+void createPass();
+
+//Student Part
+void newReg_page();
+void stud_page();
+
 //Admin Part
+bool admin_login();
+bool admin_page();
 void view_app();
 void app_approval();
-void gnr_analytic();
+void analytic();
 void report();
 
+//Exit System
+void exit_system();
+
+//Addition
+void limit_input();
+void clear_screen(); //clear sreen after move to the new page
+void loading_screen(); //loading for 3 second 
 
 //Main Menu
 int main()
 {
+	home_page();
+	return 0;
+}
+
+//Addition
+void limit_input(){ //limited output after enter Alphabet
+	if(cin.fail()){
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+	}
+} 
+
+void clear_screen(){
+	cin.get();
+	system("cls"); //clear screen
+}
+
+void loading_screen(){
+	cout<<"\nLoading";
+    for(int i=0; i<3; i++){ //loading for 3 second
+        cout<<".";
+        sleep(1); //one "." for one second
+    }
+    cout<<"\nDone!"<<endl;
+}
+
+//Login Part
+bool home_page()
+{
+	int homeChoice;
+	
+	cout<<"UTAR Monthly Car Parking Pass System"<<endl<<endl;
+	cout<<"----------Home Page----------"<<endl;
+	do{
+		cout<<"\nSelect an option : "<<endl;
+		cout<<"1. New Registration Page"<<endl;
+		cout<<"2. Student Page"<<endl;
+		cout<<"3. Admin Page"<<endl;
+		cout<<"4. Exit System"<<endl<<endl;
+		cout<<"Enter your option : ";
+		cin>>homeChoice;
+		
+		switch(homeChoice){
+			case 1: newReg_page(); break;
+			case 2: stud_page(); break;
+			case 3: admin_page(); break;
+			case 4: exit_system(); break;
+			default:limit_input(); cout<<"Invalid Option! Please Enter the Number 1-4."<<endl;
+		}
+	}while (homeChoice != 4);
+}
+
+//Student Part
+void newReg_page(){
+	cout<<"New Registration Page"<<endl;
+}
+void stud_page(){
+	cout<<"Student Page"<<endl;
+}
+
+//Admin Part
+bool admin_login()
+{
+	string id, username, password;
+	string adminUsername, adminPassword;
+
+	cout<<"\n\n---------Admin Login---------"<<endl<<endl;
+	do{
+		cout<<"Username: ";
+		cin>>adminUsername;
+		cout<<"Password: ";
+		cin>>adminPassword;
+		
+		ifstream file("admin.txt");
+		
+		//If file doesn't exist, create default admin
+	    if(!file){
+	        ofstream newFile("admin.txt");
+	        newFile<<"A001|admin|1234\n";
+	        newFile.close();
+	        file.open("admin.txt"); // reopen for reading
+	    }
+		string line;
+	    while(getline(file, line)){
+	        stringstream ss(line);
+	        getline(ss, id, '|');
+	        getline(ss, username, '|');
+	        getline(ss, password, '|');
+	
+	        if(adminUsername != username || adminPassword != password){
+	            cout<<"Login Failed! Please enter again: "<<endl<<endl;
+	        }
+	    }
+	}while(adminUsername != username || adminPassword != password);
+	cout<<"Login Successful!"<<endl;
+}
+
+bool admin_page()
+{
+	admin_login();
+	loading_screen();
+	
 	int adminChoice;
+	clear_screen();
 	
 	cout<<"----------Admin Page----------"<<endl;
 	do{
 		cout<<"\nSelect an option : "<<endl;
 		cout<<"1. View Application"<<endl;
 		cout<<"2. Application Approval"<<endl;
-<<<<<<< HEAD
-		//cout<<"3. Monthly Pass Approval"<<endl;
 		cout<<"3. Analytics"<<endl;
-=======
-		cout<<"3. Generate Analytics"<<endl;
->>>>>>> 60efb05 (changing)
 		cout<<"4. Reports"<<endl;
-		cout<<"5. Exit"<<endl;
+		cout<<"5. Back to Home Page"<<endl;
+		cout<<"6. Exit System"<<endl<<endl;
 		
 		cout<<"Enter your option : ";
 		cin>>adminChoice;
@@ -39,115 +157,32 @@ int main()
 		switch(adminChoice){
 			case 1: view_app(); break;
 			case 2: app_approval(); break;
-<<<<<<< HEAD
-			//case 3: mPass_approval(); break;
 			case 3: analytic(); break;
-=======
-			case 3: gnr_analytic(); break;
->>>>>>> 60efb05 (changing)
-			case 4: report(); break; 
-			case 5: break;
-			default: cout<<"Invalid Option! Please Enter the Number."<<endl;
+			case 4: report(); break;
+			case 5:	loading_screen(); clear_screen(); home_page(); break;
+			case 6: exit_system(); break; 
+			default:limit_input(); cout<<"Invalid Option! Please Enter the Number 1-6."<<endl;
 		}
-	}while (adminChoice != 5);
-
-	return 0;
+	}while (adminChoice != 6);
 }
+
 
 void view_app(){
-	cout<<"----------View Application----------"<<endl;
-//	ifstream file("applications.txt");
-//    string line;
-//
-//    while(getline(file, line)) {  //getline() = captures full sentences
-//        if(line.find("Pending") != string::npos) {
-//            cout << line << endl;
-//        }
-//    }
-//
-//    file.close();
+	cout<<"View Application"<<endl;
 }
-
 void app_approval(){
-	cout<<"----------Application Approval----------"<<endl;
-	
-	int appID;
-	char app_dec;
-	string reason;  //getline() only can allow string
-
-	cout<<"Enter Application ID: ";
-    cin>>appID;
-	
-	/* if approve
-		-
-	   if reject 	
-<<<<<<< HEAD
-		- studID cannot be found in the txt (student detail)  */
-=======
-		- cannot be found in the student.txt (student detail)  
-		- last payment not completed */
->>>>>>> 60efb05 (changing)
-		
-    do{
-    	cout<<"Approve or Reject (A/R): ";
-    	cin>>app_dec;
-    	
-    	if(app_dec=='a' || app_dec=='A'){
-			cout<<"The Application is approve"<<endl;
-		}
-		
-		else if(app_dec=='r' || app_dec=='R'){
-			cin.ignore();  //cleans leftover garbage before reading next input
-		    cout<<"Enter reason: ";
-			getline(cin, reason);  //getline() = captures full sentences
-			cout<<"The reason is: "<<reason<<endl;
-		}
-		
-		else{
-			cout<<"Invalid Input! Enter only alphabet A or R"<<endl;
-		}
-		
-	}while(app_dec!='a' && app_dec!='A' && app_dec!='r' && app_dec!='R');
-   
-//    cout<<"Approve or Reject (A/R): ";
-//    cin>>app_dec;
-//    	
-//    while(app_dec!='a' && app_dec!='A' && app_dec!='r' && app_dec!='R'){
-//    	cout<<"Invalid Input! Enter only alphabet A or R"<<endl;
-//    	cout<<"Approve or Reject (A/R): ";
-//    	cin>>app_dec;
-//	}
-//
-//	if(app_dec=='a' || app_dec=='A'){
-//			cout<<"The Application is approve"<<endl;
-//	}
-//	
-//	else{
-//		cin.ignore();  //cleans leftover garbage before reading next input
-//	    cout<<"Enter reason: ";
-//		getline(cin, reason);  //getline() = captures full sentences
-//		cout<<"The reason is: "<<reason;
-//	}
+	cout<<"Application Approval"<<endl;
 }
-
-<<<<<<< HEAD
-void mPass_approval(){
-	cout<<"----------Monthly Pass Approval----------"<<endl;
-	
-	/* if approve
-		- 
-	   if reject
-		- the student haven't completed the last payment */
-}
-
 void analytic(){
 	cout<<"Analytics"<<endl;
-=======
-
-void gnr_analytic(){
-	cout<<"Generate Analytics"<<endl;
->>>>>>> 60efb05 (changing)
 }
 void report(){
 	cout<<"Reports"<<endl;
+}
+
+//Exit System
+void exit_system(){
+	loading_screen();
+	cout<<"\nHave A Good Day! Thank You!"<<endl;
+	exit(0);
 }
