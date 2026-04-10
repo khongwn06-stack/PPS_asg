@@ -304,18 +304,49 @@ void generateAnalytic()
 
 void averageRenewal(){
 	cout<<"----------Average Renewal----------"<<endl;
+	/*	int avgRenew = total of month apply from stud / total apply from stud
+		A1 -> 1 month
+		A2 -> 3 months
+		A3 -> 2 months
+		average = (1+3+2)/3 = 2
+		
+		cout<<"Average Renewal: "<<avgRenew<<endl;	*/
 }
 void total_app(){
 	cout<<"----------Total Applications----------"<<endl;
+	/*	int totalApp = new + renew
+		if application.txt = 120 row
+					total = 120
+					
+		cout<<"Total Applications: "<<totalApp<<endl;	*/
 }
 void utilizationRate(){
 	cout<<"----------Car Park Utilization Rate----------"<<endl;
+	/*	double uRate = total parking time / mix parking time
+		if 1000 parking slots, 10.5hours/day, student total park 7000 hours
+			mix = 1000 × 10.5 = 10500 hours
+			Utilization = 7000 / 10500 = 66.7%
+		
+		cout<<"Car Park Utilization Rate: "<<uRate<<endl;	*/
 }
 void monthlyIncome(){
 	cout<<"----------Monthly Income----------"<<endl;
+	/*	int monthIn = total of payments.txt
+		A1 -> RM50
+		A2 -> RM50
+		A3 -> RM30
+		Total = RM130
+		
+		cout<<"Monthly Income: "<<monthIn<<endl;	*/
 }
 void growthRate(){
 	cout<<"----------Growth Rate----------"<<endl;
+	/*	double gRate = (this month - last month) / last month * 100%
+		last month = RM1000
+		this month = RM1200
+		Growth = (1200-1000)/1000 × 100 = 20%
+
+		cout<<"Growth Rate: "<<gRate<<endl;	*/
 }
 
 void fullReport(){
