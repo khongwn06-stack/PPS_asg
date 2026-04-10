@@ -1,9 +1,10 @@
 #include <iostream>
 #include <unistd.h> //use sleep() for loading screen
 #include <cstdlib>
-#include <limits> //limited output after enter Alphabet
-#include <fstream> //use ifstream(input txt file stream) and ofstream(output txt file stream)
+#include <limits>  //limited output after enter Alphabet
+#include <fstream> //required ifstream(input txt file stream) and ofstream(output txt file stream)
 #include <sstream> //extracting data from a txt file
+#include <string>  //required for the string type used with getline()
 using namespace std;
 
 //Login Part
