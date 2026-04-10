@@ -22,7 +22,12 @@ string generatePassID();
 void createPass(string studentID, string startDate, int months);
 
 //Analytics
-void generate_analytic();
+void generateAnalytic();
+void averageRenewal();
+void total_app();
+void utilizationRate();
+void monthlyIncome();
+void growthRate();
 void report();
 
 //Helper
@@ -38,6 +43,7 @@ int stringToInt(string str){
     ss >> num;
     return num;
 }
+
 
 
 //Main Menu
@@ -93,16 +99,6 @@ void admin_login()
 		if(!loginSuccess){
 		    cout<<"Login Failed! Please try again.\n";
 		}
-//	    while(getline(file, line)){
-//	        stringstream ss(line);
-//	        getline(ss, id, '|');
-//	        getline(ss, username, '|');
-//	        getline(ss, password, '|');
-//	
-//	        if(adminUsername != username || adminPassword != password){
-//	            cout<<"Login Failed! Please enter again: "<<endl<<endl;
-//	        }
-//	    }
 	}while/*(!loginSuccess)*/(adminUsername != username || adminPassword != password);
 	cout<<"Login Successful!"<<endl<<endl;
 }
@@ -130,13 +126,12 @@ void admin_page()
 		switch(adminChoice){
 			case 1: view_app(); break;
 			case 2: app_validation(); break;
-			case 3: generate_analytic(); break;
+			case 3: generateAnalytic(); break;
 			case 4: report(); break; 
 			case 5: break;
 			default: cout<<"Invalid Option! Please Enter the Number."<<endl;
 		}
 	}while(adminChoice != 5);
-
 }
 
 void view_app()
@@ -154,12 +149,14 @@ void view_app()
 //    file.close();
 }
 
-string generatePassID(){
+string generatePassID()
+{
     static int id = 1;
     return "P" + intToString(1000 + id++);
 }
 
-void createPass(string studentID, string startDate, int months){
+void createPass(string studentID, string startDate, int months)
+{
 	ofstream outFile("passes.txt", ios::app);
 	string passID = generatePassID();
 	
@@ -274,11 +271,59 @@ string reject_app()
     return "Approved";
 }
 
-
-
-void generate_analytic(){
-	cout<<"Generate Analytics"<<endl;
+void generateAnalytic()
+{
+	int analyticChoice;
+	
+	cout<<"----------Generate Analytics----------"<<endl;
+	do{
+		cout<<"\nSelect an option : "<<endl;
+		cout<<"1. Average Renewal"<<endl;
+		cout<<"2. Total Applications"<<endl;
+		cout<<"3. Car Park Utilization Rate"<<endl;
+		cout<<"4. Monthly Income"<<endl;
+		cout<<"5. Growth Rate"<<endl;
+		cout<<"6. Full Analytics Reports"<<endl;
+		cout<<"7. Exit"<<endl;
+		
+		cout<<"Enter your option : ";
+		cin>>analyticChoice;
+		
+		switch(analyticChoice){
+			case 1: averageRenewal(); break;
+			case 2: total_app(); break;
+			case 3: utilizationRate(); break;
+			case 4: monthlyIncome(); break; 
+			case 5: growthRate(); break;
+			case 6: report(); break;
+			case 7: break;
+			default: cout<<"Invalid Option! Please Enter the Number."<<endl;
+		}
+	}while(analyticChoice != 7);
 }
-void report(){
-	cout<<"Reports"<<endl;
+
+void averageRenewal(){
+	cout<<"----------Average Renewal----------"<<endl;
+}
+void total_app(){
+	cout<<"----------Total Applications----------"<<endl;
+}
+void utilizationRate(){
+	cout<<"----------Car Park Utilization Rate----------"<<endl;
+}
+void monthlyIncome(){
+	cout<<"----------Monthly Income----------"<<endl;
+}
+void growthRate(){
+	cout<<"----------Growth Rate----------"<<endl;
+}
+
+void fullReport(){
+	cout<<"----------Full Analytics Reports----------"<<endl;
+	averageRenewal();
+    total_app();
+    utilizationRate();
+    monthlyIncome();
+    growthRate();
+    cout<<"=========================================="<<endl;
 }
