@@ -1,9 +1,27 @@
-// Preprocessor Directives
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <ctime>
 using namespace std;
+
+// Struct
+struct Student 
+{
+    string name, id, faculty, phone, vehicle, password;
+};
+
+struct Application 
+{
+    string appID, studentID, status, month, payment;
+};
+
+// Global array 
+Student students[400];
+Application applications[400];
+
+int studentCount = 0;
+int applicationCount = 0;
 
 // Function Prototypes
 void registerStudent();
@@ -18,22 +36,6 @@ void updateStudentDetails(int studentIndex);
 string generateApplicationID();
 bool isWithinThreeMonths(string month); 
 
-// Student arrays
-string studentName[400];
-string studentID[400];
-string faculty[400];
-string phoneNo[400];
-string vehicleNo[400];
-string password[400];
-int studentCount = 0;
-
-// Application arrays
-string applicationID[400];
-string applicationStudentID[400];
-string applicationStatus[400];
-string applicationMonth[400];
-string applicationPaymentStatus[400];
-int applicationCount = 0;
 
 int main()
 {
@@ -41,24 +43,38 @@ int main()
     loadApplications();
 
     string choice;
-    do
-    {
-        cout << "\n======== MENU ========" << endl;
-        cout << "1. Register " << endl;
-        cout << "2. Login " << endl;
-        cout << "3. Exit" << endl;
-        cout << "\nHi! Please select an option: ";
-        cin >> choice;
-        cin.ignore();
 
-        if(choice == "1") registerStudent();
-        else if(choice == "2") loginStudent();
-        else if(choice == "3") cout << "Thank you for using the Student System. Goodbye!" << endl;
-        else cout << "Invalid choice! Please enter 1, 2, or 3. " << endl;
+	do
+	{
+    	cout << "\n========================================\n";
+    	cout << "|            STUDENT SYSTEM            |\n";
+    	cout << "========================================\n";
 
-    } while(choice != "3");
+    	cout << "| 1. Register                          |\n";
+    	cout << "| 2. Login                             |\n";
+    	cout << "| 3. Exit                              |\n";
+    	cout << "========================================\n";
 
-    return 0;
+    	cout << "Select an option: ";
+    	cin >> choice;
+    	cin.ignore();
+
+    	if(choice == "1")
+        	registerStudent();
+
+    	else if(choice == "2")
+        	loginStudent();
+
+    	else if(choice == "3")
+        	cout << "\nTHANK YOU FOR USING THE STUDENT SYSTEMS. GOODBYE!\n";
+
+    	else
+    	{
+        	cout << "\nERROR: Invalid choice\n";
+        	cout << "PLEASE ENTER 1, 2 or 3\n";
+    	}
+
+	} while(choice != "3");
 }
 
 // Load students from file 
@@ -69,16 +85,18 @@ void loadStudents()
 
     studentCount = 0;
     string line;
-    
+
     while (getline(file, line))
     {
         stringstream ss(line);
-        getline(ss, studentName[studentCount], ',');
-        getline(ss, studentID[studentCount], ',');
-        getline(ss, faculty[studentCount], ',');
-        getline(ss, phoneNo[studentCount], ',');
-        getline(ss, vehicleNo[studentCount], ',');
-        getline(ss, password[studentCount], ',');
+
+        getline(ss, students[studentCount].name, ',');
+        getline(ss, students[studentCount].id, ',');
+        getline(ss, students[studentCount].faculty, ',');
+        getline(ss, students[studentCount].phone, ',');
+        getline(ss, students[studentCount].vehicle, ',');
+        getline(ss, students[studentCount].password, ',');
+        
         studentCount++;
     }
     file.close();
@@ -96,12 +114,13 @@ void loadApplications()
     while (getline(file, line))
     {
         stringstream ss(line);
-        
-        getline(ss, applicationID[applicationCount], ',');
-        getline(ss, applicationStudentID[applicationCount], ',');
-        getline(ss, applicationStatus[applicationCount], ',');
-        getline(ss, applicationMonth[applicationCount], ',');
-        getline(ss, applicationPaymentStatus[applicationCount], ',');
+
+        getline(ss, applications[applicationCount].appID, ',');
+        getline(ss, applications[applicationCount].studentID, ',');
+        getline(ss, applications[applicationCount].status, ',');
+        getline(ss, applications[applicationCount].month, ',');
+        getline(ss, applications[applicationCount].payment, ',');
+
         applicationCount++;
     }
     file.close();
@@ -110,170 +129,210 @@ void loadApplications()
 // Register student
 void registerStudent()
 {
-    cout << "\n===== Register New Student =====" << endl;
-
+    Student s;
     string input;
     
-    cout << "Enter Full Name (or 0 to return to Main Menu): ";
+    cout << "\n=======================================================================\n";
+    cout << "|                         STUDENT REGISTRATION                        |\n";
+    cout << "=======================================================================\n";
+
+    cout << "Enter full name (PRESS 0 return to Main Menu): ";
     getline(cin, input);
     if(input == "0") return;
-    studentName[studentCount] = input;
+    s.name = input;
 
     while(true)
     {
-        cout << "Enter Student ID (or 0 to return to Main Menu): ";
+        cout << "Enter student ID (PRESS 0 return to Main Menu): ";
         getline(cin, input);
         if(input == "0") return;
 
         bool duplicate = false;
         for(int i = 0; i < studentCount; i++)
         {
-            if(studentID[i] == input)
+            if(students[i].id == input)
             {
                 duplicate = true;
-                cout << "This ID already exists! Please enter a different ID.\n";
+                cout << "\nTHIS ID ALREADY EXIXTS!\n";
                 break;
             }
         }
+
         if(!duplicate) break;
     }
-    studentID[studentCount] = input;
+    s.id = input;
 
-    cout << "Enter Faculty (or 0 to return to Main Menu): ";
+    cout << "Enter faculty (PRESS 0 return to Main Menu): ";
     getline(cin, input);
     if(input == "0") return;
-    faculty[studentCount] = input;
+    s.faculty = input;
 
-    cout << "Enter Phone Number (or 0 to return to Main Menu): ";
+    cout << "Enter phone number (PRESS 0 return to Main Menu): ";
     getline(cin, input);
     if(input == "0") return;
-    phoneNo[studentCount] = input;
+    s.phone = input;
 
-    cout << "Enter Vehicle Number (or 0 to return to Main Menu): ";
+    cout << "Enter vehicle number (PRESS 0 return to Main Menu): ";
     getline(cin, input);
     if(input == "0") return;
-    vehicleNo[studentCount] = input;
+    s.vehicle = input;
 
-    cout << "Set Password (or 0 to return to Main Menu): ";
+    cout << "Set password (PRESS 0 return to Main Menu): ";
     getline(cin, input);
     if(input == "0") return;
-    password[studentCount] = input;
+    s.password = input;
+
+    students[studentCount] = s;
+    studentCount++;
 
     ofstream file("students.txt", ios::app);
-    file << studentName[studentCount] << ","
-         << studentID[studentCount] << ","
-         << faculty[studentCount] << ","
-         << phoneNo[studentCount] << ","
-         << vehicleNo[studentCount] << ","
-         << password[studentCount] << endl;
+    file << s.name << "," << s.id << "," << s.faculty << ","
+         << s.phone << "," << s.vehicle << "," << s.password << endl;
     file.close();
 
-    cout << "\nCongratulations " << studentName[studentCount] << "! Your registration was successful!" << endl;
-    studentCount++;
+    cout << "\nREGISTERED SUCCESSFULLY!\n";
 }
-
+ 
 // Login student
 void loginStudent()
 {
-    string id, psword;
-    int studentIndex = -1;
+    string id, pw;
+    int index = -1;
 
     while(true)
     {
-        cout << "\n===== Student Login =====" << endl;
-        cout << "Enter Student ID (or 0 to return to Main Menu): ";
+        cout << "\n========================================\n";
+        cout << "|           STUDENT LOGIN              |\n";
+        cout << "========================================\n";
+
+        cout << "Student ID (PRESS 0 to return): ";
         cin >> id;
+
         if(id == "0") return;
-        cout << "Enter Password (or 0 to return to Main Menu): ";
-        cin >> psword;
-        if(psword == "0") return;
+
+        cout << "Password (PRESS 0 to return): ";
+        cin >> pw;
+
+        if(pw == "0") return;
 
         bool idFound = false;
+
         for(int i = 0; i < studentCount; i++)
         {
-            if(studentID[i] == id)
+            if(students[i].id == id)
             {
                 idFound = true;
-                if(password[i] == psword)
+
+                if(students[i].password == pw)
                 {
-                    studentIndex = i;
+                    index = i;
                     break;
                 }
                 else
                 {
-                    cout << "Incorrect password. Please try again.\n";
+                    cout << "\nERROR: Incorrect password\n";
                     break;
                 }
             }
         }
 
-        if(studentIndex != -1) break;
+        if(index != -1) break;
+
         if(!idFound)
         {
-            cout << "Student ID not found. Please register first.\n";
+            cout << "\nERROR: Student ID not found\n";
         }
     }
 
-    // Show login success and student details
-    cout << "\nLogin Successful! Welcome " << studentName[studentIndex] << "!" << endl;
-    cout << "====== Your Details ======" << endl;
-    cout << "Name         : " << studentName[studentIndex] << endl;
-    cout << "Student ID   : " << studentID[studentIndex] << endl;
-    cout << "Faculty      : " << faculty[studentIndex] << endl;
-    cout << "Phone Number : " << phoneNo[studentIndex] << endl;
-    cout << "Vehicle No.  : " << vehicleNo[studentIndex] << endl;
-    cout << "---------------------------" << endl;
+    // login successful
+    cout << "\nLOGIN SUCCESSFUL!\n";
+    cout << "~ WELCOME " << students[index].name << " ~\n";
 
-    studentMenu(studentIndex);
+    // success login message
+    cout << "====================================\n";
+	cout << "|           YOUR DETAILS           |\n";
+	cout << "====================================\n";
+
+	cout << "| Name         : " << students[index].name;
+	cout << string(18 - students[index].name.length(), ' ') << "|\n";
+
+	cout << "| Student ID   : " << students[index].id;
+	cout << string(18 - students[index].id.length(), ' ') << "|\n";
+
+	cout << "| Faculty      : " << students[index].faculty;
+	cout << string(18 - students[index].faculty.length(), ' ') << "|\n";
+
+	cout << "| Phone Number : " << students[index].phone;
+	cout << string(18 - students[index].phone.length(), ' ') << "|\n";
+
+	cout << "| Vehicle No.  : " << students[index].vehicle;
+	cout << string(18 - students[index].vehicle.length(), ' ') << "|\n";
+
+	cout << "====================================\n";
+	
+	studentMenu(index);
 }
 
 // Student Menu
-void studentMenu(int studentIndex)
+void studentMenu(int index)
 {
     string choice;
+
     do
     {
-        cout << "\n===== Student Menu =====" << endl;
-        cout << "1. Apply New Pass" << endl;
-        cout << "2. Renew Pass" << endl;
-        cout << "3. View Application Status" << endl;
-        cout << "4. Update Personal Details" << endl;
-        cout << "5. Logout" << endl;
+        cout << "\n============ STUDENT MENU ============\n";
+        cout << "| 1. Apply New Pass                  |\n";
+        cout << "| 2. Renew Pass                      |\n";
+        cout << "| 3. View Application Status         |\n";
+        cout << "| 4. Update Personal Details         |\n";
+        cout << "|------------------------------------|\n";;
+        cout << "|     * Press 0 to Log out *         |\n";
+        cout << "--------------------------------------\n";
+
         cout << "Select an option: ";
         cin >> choice;
 
-        if(choice == "1") submitApplication(studentIndex);
-        else if(choice == "2") renewApplication(studentIndex);
-        else if(choice == "3") viewApplication(studentIndex);
-        else if(choice == "4") updateStudentDetails(studentIndex);
-        else if(choice == "5") cout << "Logout...\n";
-        else cout << "Invalid choice!\n";
+        if(choice == "1") submitApplication(index);
+        else if(choice == "2") renewApplication(index);
+        else if(choice == "3") viewApplication(index);
+        else if(choice == "4") updateStudentDetails(index);
+        else if(choice == "0") cout << "\nLOG OUT...\n";
+        else
+        {
+            cout << "\nINVALID CHOICE! PLEASE TRY AGAIN!\n";
+        }
 
-    } while(choice != "5");
+    } while(choice != "0");
 }
 
 // Apply New Pass
-void submitApplication(int studentIndex)
+void submitApplication(int index)
 {
     string month;
-    
+
     while(true)
     {
-        cout << "Enter month (YYYY-MM) or 0 to return: ";
+        cout << "\n===================================================================\n";
+        cout << "|                      APPLY NEW PASS                             |\n";
+        cout << "===================================================================\n";
+        cout << "Enter month (YYYY-MM or 0 to return): ";
         cin >> month;
+        
+
         if(month == "0") return;
 
         if(!isWithinThreeMonths(month))
         {
-            cout << "Only future months within 3 months allowed.\n";
+            cout << "\nERROR: Only within 3 months allowed!\n";
             continue;
         }
 
         bool duplicate = false;
+
         for(int i = 0; i < applicationCount; i++)
         {
-            if(applicationStudentID[i] == studentID[studentIndex] &&
-               applicationMonth[i] == month)
+            if(applications[i].studentID == students[index].id &&
+               applications[i].month == month)
             {
                 duplicate = true;
                 break;
@@ -282,81 +341,97 @@ void submitApplication(int studentIndex)
 
         if(duplicate)
         {
-            cout << "Already applied. Choose another month.\n";
+            cout << "\nERROR: Already applied for this month!\n";
             continue;
         }
 
         break;
     }
 
-    string id = generateApplicationID();
+    Application a;
+    a.appID = generateApplicationID();
+    a.studentID = students[index].id;
+    a.status = "Pending";
+    a.month = month;
+    a.payment = "Unpaid";
 
-    applicationID[applicationCount] = id;
-    applicationStudentID[applicationCount] = studentID[studentIndex];
-    applicationStatus[applicationCount] = "Pending";
-    applicationMonth[applicationCount] = month;
-    applicationPaymentStatus[applicationCount] = "Unpaid";
+    applications[applicationCount] = a;
+    applicationCount++;
 
     ofstream file("applications.txt", ios::app);
-    file << id << "," << studentID[studentIndex] << ",Pending," << month << ",Unpaid" << endl;
+    file << a.appID << "," << a.studentID << ","
+         << a.status << "," << a.month << "," << a.payment << endl;
     file.close();
 
-    applicationCount++;
-    cout << "Application success! Your Application is ID is " << id << endl;
+    cout << "\nAPPLICATION SUCCESSFUL!" << endl;
+	cout << "Your Application ID : " << a.appID<<endl;
 }
 
 // Renew Pass
-void renewApplication(int studentIndex)
+void renewApplication(int index)
 {
-    cout << "\n===== Renew Pass =====\n";
-
     bool found = false;
+    
+    cout << "\n========================================\n";
+	cout << "|         EXISTING APPLICATIONS        |\n";
+	cout << "========================================\n";
 
-    cout << "Your existing applications:\n";
+	for(int i = 0; i < applicationCount; i++)
+	{
+    	if(applications[i].studentID == students[index].id)
+    	{
+        	cout << "| Application ID : " << applications[i].appID;
+        	cout << string(20 - applications[i].appID.length(), ' ') << "|\n";
 
-    for(int i = 0; i < applicationCount; i++)
-    {
-        if(applicationStudentID[i] == studentID[studentIndex])
-        {
-            cout << applicationID[i] << " | "
-                 << applicationMonth[i] << " | "
-                 << applicationStatus[i] << endl;
-            found = true;
-        }
-    }
+        	cout << "| Month          : " << applications[i].month;
+        	cout << string(20 - applications[i].month.length(), ' ') << "|\n";
 
+        	cout << "----------------------------------------\n";
+
+        	found = true;
+    	}
+	}
+	
+    // If no application exists, exit the function
     if(!found)
     {
-        cout << "No application found.\n";
+        cout << "|NO APPLICATION FOUND!		       |\n";
+        cout << "========================================\n";
         return;
     }
 
     string month;
 
+    // Input validation loop for new application month
     while(true)
     {
-        cout << "\nEnter new month (YYYY-MM or 0 to cancel): ";
+        cout << "\nRENEW YOUR PASS HERE: "<<endl;
+		cout<<"Enter new month (YYYY-MM or 0 to cancel): ";
         cin >> month;
 
         if(month == "0") return;
 
+        // Prevent selection of past months
         if(month < "2026-04")
         {
-            cout << "Cannot select past months.\n";
+            cout << "\nCANNOT SELECT PASS MONTHS.\n";
             continue;
         }
 
+        // Ensure month is within allowed 3-month range
         if(!isWithinThreeMonths(month))
         {
-            cout << "Only within 3 months allowed.\n";
+            cout << "\nONLY WITHIN 3 MONTHS ALLOWED.\n";
             continue;
         }
 
         bool duplicate = false;
+
+        // Check if student already applied for this month
         for(int i = 0; i < applicationCount; i++)
         {
-            if(applicationStudentID[i] == studentID[studentIndex] &&
-               applicationMonth[i] == month)
+            if(applications[i].studentID == students[index].id &&
+               applications[i].month == month)
             {
                 duplicate = true;
                 break;
@@ -365,116 +440,170 @@ void renewApplication(int studentIndex)
 
         if(duplicate)
         {
-            cout << "Already applied for this month.\n";
+            cout << "\nALREADY APPLIED FOR THIS MONTH.\n";
             continue;
         }
 
         break;
     }
 
-    string id = generateApplicationID();
+    // Create new application record
+    Application a;
+    a.appID = generateApplicationID();
+    a.studentID = students[index].id;
+    a.status = "Pending";
+    a.month = month;
+    a.payment = "Unpaid";
 
-    applicationID[applicationCount] = id;
-    applicationStudentID[applicationCount] = studentID[studentIndex];
-    applicationStatus[applicationCount] = "Pending";
-    applicationMonth[applicationCount] = month;
-    applicationPaymentStatus[applicationCount] = "Unpaid";
-
+    // Save application to file
     ofstream file("applications.txt", ios::app);
-    file << id << "," << studentID[studentIndex]
+    file << a.appID << "," << a.studentID
          << ",Pending," << month << ",Unpaid" << endl;
     file.close();
 
-    applicationCount++;
-
-    cout << "Renew successful! Your Application ID is " << id << endl;
+	cout << "\nRENEW SUCCESSFUL!" << endl;
+	cout << " Your Application ID : " << a.appI<<endl;
 }
 
 // View Application Status
-void viewApplication(int studentIndex)
+void viewApplication(int index)
 {
-    cout << "\n===== Your Applications =====" << endl;
-    bool found = false;
-    for(int i = 0; i < applicationCount; i++)
-    {
-        if(applicationStudentID[i] == studentID[studentIndex])
-        {
-            cout << "Application ID: " << applicationID[i]
-                 << " | Month: " << applicationMonth[i]
-                 << " | Status: " << applicationStatus[i]
-                 << " | Payment: " << applicationPaymentStatus[i]
-                 << endl;
-                 
-            found = true;
-        }
-    }
-    if(!found) cout << "No applications found." << endl;
+    cout << "\n====================================\n";
+	cout << "|         APPLICATION STATUS       |\n";
+	cout << "====================================\n";
+
+	bool found = false;
+
+	for(int i = 0; i < applicationCount; i++)
+	{
+    	if(applications[i].studentID == students[index].id)
+    	{
+        	cout << "| Application ID : " << applications[i].appID;
+        	cout << string(16 - applications[i].appID.length(), ' ') << "|\n";
+
+        	cout << "| Month          : " << applications[i].month;
+        	cout << string(16 - applications[i].month.length(), ' ') << "|\n";
+
+        	cout << "| Status         : " << applications[i].status;
+        	cout << string(16 - applications[i].status.length(), ' ') << "|\n";
+
+        	cout << "| Payment        : " << applications[i].payment;
+        	cout << string(16 - applications[i].payment.length(), ' ') << "|\n";
+
+        	cout << "====================================\n";
+
+        	found = true;
+    	}
+	}
+
+	if(!found)
+	{
+    	cout << "| NO APPLICATION FOUND!            |\n";
+    	cout << "====================================\n";
+	}
 }
 
 // Update personal details
-void updateStudentDetails(int studentIndex)
+void updateStudentDetails(int index)
 {
-   string choice;
+    string choice;
+
     do
     {
-        cout << "\n===== Update Personal Details =====" << endl;
-        cout << "1. Edit Full Name (current: " << studentName[studentIndex] << ")" << endl;
-        cout << "2. Edit Faculty (current: " << faculty[studentIndex] << ")" << endl;
-        cout << "3. Edit Phone Number (current: " << phoneNo[studentIndex] << ")" << endl;
-        cout << "4. Edit Vehicle No (current: " << vehicleNo[studentIndex] << ")" << endl;
-        cout << "0. Return to Student Menu" << endl;
-        cout << "Select an option: ";
-        cin >> choice;
-        cin.ignore();
+        cout << "\n====================================\n";
+		cout << "|     UPDATE PERSONAL DETAILS      |\n";
+		cout << "====================================\n";
 
-        bool updated = false; // Track if any field was updated
+		cout << "| 1. Full Name   : " << students[index].name;
+		cout << string(16 - students[index].name.length(), ' ') << "|\n";
+
+		cout << "| 2. Faculty     : " << students[index].faculty;
+		cout << string(16 - students[index].faculty.length(), ' ') << "|\n";
+
+		cout << "| 3. Phone No.   : " << students[index].phone;
+		cout << string(16 - students[index].phone.length(), ' ') << "|\n";
+
+		cout << "| 4. Vehicle No. : " << students[index].vehicle;
+		cout << string(16 - students[index].vehicle.length(), ' ') << "|\n";
+
+		cout << "|----------------------------------|\n";
+		cout << "| Press 0 Return to Student Menu   |\n";
+		cout << "====================================\n";
+
+		cout << "Select an option: ";
+		cin >> choice;
+		cin.ignore();
+      
+        bool updated = false;
         string temp;
 
         if(choice == "1")
         {
-            cout << "Enter new Full Name (or 0 to cancel): ";
+            cout << "\nEnter new Full Name (or 0 to cancel): ";
             getline(cin, temp);
-            if(temp != "0") { studentName[studentIndex] = temp; updated = true; }
+            if(temp != "0")
+            {
+                students[index].name = temp;
+                updated = true;
+            }
         }
         else if(choice == "2")
         {
-            cout << "Enter new Faculty (or 0 to cancel): ";
+            cout << "\nEnter new Faculty (or 0 to cancel): ";
             getline(cin, temp);
-            if(temp != "0") { faculty[studentIndex] = temp; updated = true; }
+            if(temp != "0")
+            {
+                students[index].faculty = temp;
+                updated = true;
+            }
         }
         else if(choice == "3")
         {
-            cout << "Enter new Phone Number (or 0 to cancel): ";
+            cout << "\nEnter new Phone Number (or 0 to cancel): ";
             getline(cin, temp);
-            if(temp != "0") { phoneNo[studentIndex] = temp; updated = true; }
+            if(temp != "0")
+            {
+                students[index].phone = temp;
+                updated = true;
+            }
         }
         else if(choice == "4")
         {
-            cout << "Enter new Vehicle No (or 0 to cancel): ";
+            cout << "\nEnter new Vehicle No (or 0 to cancel): ";
             getline(cin, temp);
-            if(temp != "0") { vehicleNo[studentIndex] = temp; updated = true; }
+            if(temp != "0")
+            {
+                students[index].vehicle = temp;
+                updated = true;
+            }
         }
         else if(choice == "0")
         {
-            cout << "Returning to Student Menu..." << endl;
+            cout << "RETURNING TO STUDENT MENU...\n";
             break;
         }
         else
         {
-            cout << "Invalid option! Please select again." << endl;
+            cout << "\nINVALID OPTION! PLEASE SELECT AGAIN.\n";
         }
 
+        // save file
         if(updated)
         {
-            // Save updates after each successful edit
             ofstream file("students.txt");
+
             for(int i = 0; i < studentCount; i++)
             {
-                file << studentName[i] << "," << studentID[i] << "," << faculty[i] << ","
-                     << phoneNo[i] << "," << vehicleNo[i] << "," << password[i] << endl;
+                file << students[i].name << ","
+                     << students[i].id << ","
+                     << students[i].faculty << ","
+                     << students[i].phone << ","
+                     << students[i].vehicle << ","
+                     << students[i].password << endl;
             }
+
             file.close();
-            cout << "Update saved successfully.\n";
+            cout << "UPDATE SAVED SUCCESSFULLY.\n";
         }
 
     } while(choice != "0");
@@ -483,24 +612,50 @@ void updateStudentDetails(int studentIndex)
 // Generate Application ID
 string generateApplicationID()
 {
-    int num = applicationCount + 1;
     stringstream ss;
-    ss << "A" << num;
+    ss << "A" << (applicationCount + 1);
     return ss.str();
 }
 
 // validation
 bool isWithinThreeMonths(string month)
 {
-    string current = "2026-04";
-
-    // must be valid format YYYY-MM
+  
     if(month.length() != 7) return false;
+    if(month[4] != '-') return false;
 
-    // allow current month and next 3 months only
-    if(month < current) return false;
-    if(month > "2026-07") return false;
+    for(int i = 0; i < 7; i++)
+    {
+        if(i == 4) continue;
+        if(!isdigit(month[i])) return false;
+    }
+
+  
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+
+    int curYear = 1900 + ltm->tm_year;
+    int curMonth = 1 + ltm->tm_mon;
+
+  
+    int inYear, inMonth;
+    char dash;
+
+    stringstream ss(month);
+    ss >> inYear >> dash >> inMonth;
+
+  
+    if(inMonth < 1 || inMonth > 12) return false;
+
+   
+    int curTotal = curYear * 12 + curMonth;
+    int inTotal = inYear * 12 + inMonth;
+
+    int diff = inTotal - curTotal;
+
+ 
+    if(diff < 0) return false;
+    if(diff > 3) return false;
 
     return true;
 }
-
