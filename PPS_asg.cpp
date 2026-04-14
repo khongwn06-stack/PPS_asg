@@ -163,6 +163,7 @@ bool home_page()
 
         cout << "Please select an option: ";
 		cin>>homeChoice;
+		cin.ignore(numeric_limits<streamsize>::max(), '\n');
 		
 		switch(homeChoice){
 			case 1: stud_page(); break;
@@ -192,7 +193,10 @@ void stud_page()
         cin >> student;
 		
 		switch(student){
-			case 1: registerStudent(); break;
+			case 1: 
+			 cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			 registerStudent(); 
+			 break;
 			case 2: loginStudent(); break;
 			case 3: home_page(); break;
 			default:limit_input(); cout<<"Invalid Option! Please Enter the Number 1-3."<<endl;
@@ -270,6 +274,7 @@ void registerStudent()
         if(input == "0") return;
 
         bool duplicate = false;
+        
         for(int i = 0; i < studentCount; i++)
         {
             if(students[i].id == input)
@@ -400,7 +405,7 @@ void studentMenu(int index)
 {
     int studchoice;
 
-    do
+    while(true)
     {
         cout << "\n========= STUDENT DASHBOARD ==========\n";
         cout << "| 1. Apply New Pass                  |\n";
@@ -411,20 +416,36 @@ void studentMenu(int index)
         cout << "======================================\n";
 
         cout << "Please select an option: ";
-        cin >> studchoice;
         
-        cin.clear();
-        cin.ignore(10000, '\n');
+        int studchoice;
+		string input;
 
-		switch(studchoice){
-			case 1: submitApplication(index); break;
-			case 2: renewApplication(index); break;
-			case 3: viewApplication(index); break;
-			case 4: updateStudentDetails(index); break;
-			case 5: cout << "\nBack to Student Module...\n"; stud_page(); break;
-			default:limit_input(); cout<<"Invalid Option! Please Enter the Number 1-5."<<endl;
+		getline(cin, input);
+
+		stringstream ss(input);
+
+		if (!(ss >> studchoice))
+		{	
+    		cout << "Invalid input!\n";
+    		continue;
 		}
-    } while(studchoice != 5);
+
+
+        switch(studchoice)
+        {
+            case 1: submitApplication(index); break;
+            case 2: renewApplication(index); break;
+            case 3: viewApplication(index); break;
+            case 4: updateStudentDetails(index); break;
+
+            case 5:
+                cout << "\nBack to Student Module...\n";
+                return;
+
+            default:
+                cout << "Invalid Option!\n";
+        }
+    }
 }
 
 // Apply New Pass
@@ -563,14 +584,33 @@ void renewApplication(int index)
     }
 
     int choice;
-    cout << "\nSelect index number to renew: ";
-    cin >> choice;
 
-    if(choice < 0 || choice >= count)
-    {
-        cout << "\nINVALID SELECTION!\n";
-        return;
-    }
+	while(true)
+	{
+    	cout << "\nSelect index (-1 cancel): ";
+    	cin >> choice;
+
+    	if(cin.fail())
+    	{
+        	cin.clear();
+        	cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        	cout << "\nInvalid input format!\n";
+        	continue;
+    	}
+
+    	cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    	if(choice == -1)
+    	{
+        	cout << "Cancelled\n";
+        	return;
+    	}
+
+    	if(choice >= 0 && choice < count)
+        break;
+
+    	cout << "INVALID SELECTION!\n";
+	}
 
     int realIndex = list[choice];
 
