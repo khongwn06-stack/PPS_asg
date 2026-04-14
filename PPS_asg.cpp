@@ -334,6 +334,7 @@ void loginStudent()
 
         cout << "Student ID (PRESS 0 to return): ";
         cin >> id;
+        
 
         if(id == "0") return;
 
@@ -374,6 +375,8 @@ void loginStudent()
     // login successful
     cout << "\nLOGIN SUCCESSFUL!\n";
     cout << "~ WELCOME " << students[index].name << " ~\n";
+    
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
     // success login message
     cout << "====================================\n";
@@ -403,7 +406,6 @@ void loginStudent()
 // Student Menu
 void studentMenu(int index)
 {
-    int studchoice;
 
     while(true)
     {
@@ -548,6 +550,9 @@ void submitApplication(int index)
 
     cout << "\nAPPLICATION SUCCESSFUL!\n";
     cout << "Your Application ID : " << a.appID << endl;
+    
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    
 }
 
 // Renew Pass
