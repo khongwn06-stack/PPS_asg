@@ -406,7 +406,6 @@ void loginStudent()
 // Student Menu
 void studentMenu(int index)
 {
-
     while(true)
     {
         cout << "\n========= STUDENT DASHBOARD ==========\n";
@@ -418,20 +417,20 @@ void studentMenu(int index)
         cout << "======================================\n";
 
         cout << "Please select an option: ";
-        
+
+        string input;
+        getline(cin, input);
+
+        if(input.empty()) continue;
+
+        stringstream ss(input);
         int studchoice;
-		string input;
 
-		getline(cin, input);
-
-		stringstream ss(input);
-
-		if (!(ss >> studchoice))
-		{	
-    		cout << "Invalid input!\n";
-    		continue;
-		}
-
+        if (!(ss >> studchoice))
+        {
+            cout << "Invalid input!\n";
+            continue;
+        }
 
         switch(studchoice)
         {
@@ -461,10 +460,10 @@ void submitApplication(int index)
         cout << "|                      APPLY NEW PASS                             |\n";
         cout << "===================================================================\n";
         cout << "Enter month (YYYY-MM or 0 to return): ";
-        cin >> month;
+
+        getline(cin, month);
 
         if(month == "0") return;
-
 
         if(month.length() != 7 || month[4] != '-')
         {
@@ -474,17 +473,14 @@ void submitApplication(int index)
 
         int inYear, inMonth;
         char dash;
-
         stringstream ss(month);
         ss >> inYear >> dash >> inMonth;
 
- 
         if(inMonth < 1 || inMonth > 12)
         {
             cout << "\n[ERROR] Invalid month value!\n";
             continue;
         }
-
 
         time_t now = time(0);
         tm *ltm = localtime(&now);
@@ -495,20 +491,17 @@ void submitApplication(int index)
         int curTotal = curYear * 12 + curMonth;
         int inTotal = inYear * 12 + inMonth;
 
-
         if(inTotal < curTotal)
         {
             cout << "\n[ERROR] Cannot select past month!\n";
             continue;
         }
 
-
         if(inTotal - curTotal > 3)
         {
             cout << "\n[ERROR] Cannot exceed 3 months!\n";
             continue;
         }
-
 
         bool duplicate = false;
 
@@ -531,7 +524,6 @@ void submitApplication(int index)
         break;
     }
 
-
     Application a;
     a.appID = generateApplicationID();
     a.studentID = students[index].id;
@@ -539,9 +531,7 @@ void submitApplication(int index)
     a.month = month;
     a.payment = "Unpaid";
 
-    applications[applicationCount] = a;
-    applicationCount++;
-
+    applications[applicationCount++] = a;
 
     ofstream file("applications.txt", ios::app);
     file << a.appID << "," << a.studentID << ","
@@ -550,9 +540,6 @@ void submitApplication(int index)
 
     cout << "\nAPPLICATION SUCCESSFUL!\n";
     cout << "Your Application ID : " << a.appID << endl;
-    
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    
 }
 
 // Renew Pass
@@ -590,32 +577,31 @@ void renewApplication(int index)
 
     int choice;
 
-	while(true)
-	{
-    	cout << "\nSelect index (-1 cancel): ";
-    	cin >> choice;
+    while(true)
+    {
+        cout << "\nSelect index (press -1 to cancel): ";
 
-    	if(cin.fail())
-    	{
-        	cin.clear();
-        	cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        	cout << "\nInvalid input format!\n";
-        	continue;
-    	}
+        string input;
+        getline(cin, input);
 
-    	cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        stringstream ss(input);
+        if(!(ss >> choice))
+        {
+            cout << "Invalid input format!\n";
+            continue;
+        }
 
-    	if(choice == -1)
-    	{
-        	cout << "Cancelled\n";
-        	return;
-    	}
+        if(choice == -1)
+        {
+            cout << "Cancelled\n";
+            return;
+        }
 
-    	if(choice >= 0 && choice < count)
-        break;
+        if(choice >= 0 && choice < count)
+            break;
 
-    	cout << "INVALID SELECTION!\n";
-	}
+        cout << "INVALID SELECTION!\n";
+    }
 
     int realIndex = list[choice];
 
@@ -624,7 +610,8 @@ void renewApplication(int index)
     while(true)
     {
         cout << "\nEnter new month (YYYY-MM or 0 to cancel): ";
-        cin >> month;
+
+        getline(cin, month);
 
         if(month == "0") return;
 
