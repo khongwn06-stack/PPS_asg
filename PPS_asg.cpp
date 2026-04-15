@@ -739,25 +739,25 @@ void updateStudentDetails(int index)
 
     do
     {
-        cout << "\n====================================\n";
-		cout << "|     UPDATE PERSONAL DETAILS      |\n";
-		cout << "====================================\n";
+        cout << "\n===========================================\n";
+		cout << "|           UPDATE PERSONAL DETAILS       |\n";
+		cout << "===========================================\n";
 
 		cout << "| 1. Full Name   : " << students[index].name;
-		cout << string(16 - students[index].name.length(), ' ') << "|\n";
+		cout << string(23 - students[index].name.length(), ' ') << "|\n";
 
 		cout << "| 2. Faculty     : " << students[index].faculty;
-		cout << string(16 - students[index].faculty.length(), ' ') << "|\n";
+		cout << string(23 - students[index].faculty.length(), ' ') << "|\n";
 
 		cout << "| 3. Phone No.   : " << students[index].phone;
-		cout << string(16 - students[index].phone.length(), ' ') << "|\n";
+		cout << string(23 - students[index].phone.length(), ' ') << "|\n";
 
 		cout << "| 4. Vehicle No. : " << students[index].vehicle;
-		cout << string(16 - students[index].vehicle.length(), ' ') << "|\n";
+		cout << string(23 - students[index].vehicle.length(), ' ') << "|\n";
 
-		cout << "|----------------------------------|\n";
-		cout << "| Press 0 Return to Student Menu   |\n";
-		cout << "====================================\n";
+		cout << "|-----------------------------------------|\n";
+		cout << "| Press 0 Return to Student Dashboard     |\n";
+		cout << "===========================================\n";
 
 		cout << "Select an option: ";
 		cin >> choice;
