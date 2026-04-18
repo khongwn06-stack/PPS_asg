@@ -873,7 +873,7 @@ void admin_page(int index)
 		cout<<"=========== ADMIN MODULE ==========="<<endl;
         cout<<"| 1. View Students Details         |"<<endl;
         cout<<"| 2. Application Validation        |"<<endl;
-        cout<<"| 3. Full Analytics Reports        |"<<endl;
+        cout<<"| 3. Summary Analytics Reports     |"<<endl;
         cout<<"| 4. Back to Home Page             |"<<endl;
         cout<<"===================================="<<endl;
 		
@@ -1294,7 +1294,7 @@ void growthRate()
 void fullReport()
 {
     cout<<"\n==================================================="<<endl;
-	cout<<"|             FULL ANALYTICS REPORTS              |"<<endl;
+	cout<<"|          SUMMARY OF ANALYTICS REPORTS           |"<<endl;
 	cout<<"==================================================="<<endl;
 	averageRenewal();
     total_app();
