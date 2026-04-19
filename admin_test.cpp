@@ -52,14 +52,16 @@ int findPassIndex(string studentID);
 void stud_page();
 void registerStudent();
 void loginStudent();
-
 void successLoginS(int index);
 void studentMenu(int studentIndex);
 
 void submitApplication(int studentIndex);
 void renewApplication(int studentIndex); 
 void viewApplication(int studentIndex);
+void viewPass(int index);
 void updateStudentDetails(int studentIndex);
+
+// Applications.txt
 string generateApplicationID();
 bool isWithinThreeMonths(string month); 
 
@@ -78,15 +80,14 @@ string validate_app(string studentID, string appID);
 // Pass.txt
 string generatePassID();
 void createPass(string studentID, string startDate, int months);
-void viewPass(int index);
 
 // Generate Analytics
+void fullReport();
 void averageRenewal();
 void total_app();
 void utilizationRate();
 void monthlyIncome();
 void growthRate();
-void fullReport();
 
 
 //========================================Payment Part========================================
@@ -181,6 +182,72 @@ void home_page()
 	}while(homeChoice != 5);
 }
 
+// Load students from txt.file
+void loadStudents()
+{
+    ifstream file("students.txt");
+    if(!file) return;
+
+    studentCount = 0;
+    string line;
+
+    while(getline(file, line)){
+        stringstream ss(line);
+        getline(ss, students[studentCount].name, ',');
+        getline(ss, students[studentCount].id, ',');
+        getline(ss, students[studentCount].faculty, ',');
+        getline(ss, students[studentCount].phone, ',');
+        getline(ss, students[studentCount].vehicle, ',');
+        getline(ss, students[studentCount].password, ',');
+        studentCount++;
+    }
+    file.close();
+}
+
+// Load applications from txt.file
+void loadApplications()
+{
+    ifstream file("applications.txt");
+    if(!file) return;
+
+    applicationCount = 0;
+    string line;
+    
+    while(getline(file, line)){
+        stringstream ss(line);
+        getline(ss, applications[applicationCount].appID, ',');
+        getline(ss, applications[applicationCount].studentID, ',');
+        getline(ss, applications[applicationCount].status, ',');
+        getline(ss, applications[applicationCount].month, ',');
+        getline(ss, applications[applicationCount].payment, ',');
+        applicationCount++;
+    }
+    file.close();
+}
+
+// Load passes from txt.file
+void loadPasses()
+{
+    ifstream file("passes.txt");
+    if(!file) return;
+
+    passCount = 0;
+    string line;
+
+    while(getline(file, line)){
+        stringstream ss(line);
+
+        getline(ss, passes[passCount].passID, ',');
+        getline(ss, passes[passCount].studentID, ',');
+        getline(ss, passes[passCount].startDate, ',');
+        getline(ss, passes[passCount].endDate, ',');
+        getline(ss, passes[passCount].status, ',');
+
+        passCount++;
+    }
+
+    file.close();
+}
 
 //===========================================================Find index in array by matching ID===========================================================
 // Find student index in array by matching Student ID
@@ -240,49 +307,6 @@ void stud_page()
 			default:limit_input(); cout<<"\nInvalid Option! Please Enter the Number 1-3."<<endl;
 		}
     }while(studChoice != 3);
-}
-
-// Load students from txt.file
-void loadStudents()
-{
-    ifstream file("students.txt");
-    if(!file) return;
-
-    studentCount = 0;
-    string line;
-
-    while(getline(file, line)){
-        stringstream ss(line);
-        getline(ss, students[studentCount].name, ',');
-        getline(ss, students[studentCount].id, ',');
-        getline(ss, students[studentCount].faculty, ',');
-        getline(ss, students[studentCount].phone, ',');
-        getline(ss, students[studentCount].vehicle, ',');
-        getline(ss, students[studentCount].password, ',');
-        studentCount++;
-    }
-    file.close();
-}
-
-// Load applications from txt.file
-void loadApplications()
-{
-    ifstream file("applications.txt");
-    if(!file) return;
-
-    applicationCount = 0;
-    string line;
-    
-    while(getline(file, line)){
-        stringstream ss(line);
-        getline(ss, applications[applicationCount].appID, ',');
-        getline(ss, applications[applicationCount].studentID, ',');
-        getline(ss, applications[applicationCount].status, ',');
-        getline(ss, applications[applicationCount].month, ',');
-        getline(ss, applications[applicationCount].payment, ',');
-        applicationCount++;
-    }
-    file.close();
 }
 
 // Register student
@@ -725,6 +749,32 @@ void viewApplication(int index)
 	}
 }
 
+// View Parking Pass
+void viewPass(int index)
+{
+    bool found = false;
+    
+    cout<<"\n========================================"<<endl;
+	cout<<"|             PARKING PASS             |"<<endl;
+	cout<<"========================================"<<endl;
+
+	for(int i = 0; i < passCount; i++){
+        if(passes[i].studentID == students[index].id){
+        	cout << "| Pass ID   : " << passes[i].passID << string(30-passes[i].passID.length(), ' ') << "|\n";
+        	cout << "| Start Date: " << passes[i].startDate << string(30-passes[i].startDate.length(), ' ') << "|\n";
+        	cout << "| End Date  : " << passes[i].endDate << string(30-passes[i].endDate.length(), ' ') << "|\n";
+        	cout << "| Status    : " << passes[i].status << string(30-passes[i].status.length(), ' ') << "|\n";
+        	cout<<"========================================"<<endl;
+        	found = true;
+    	}
+	}
+
+	if(!found){
+    	cout<<"|      --NO PARKING PASS FOUND!--      |"<<endl;
+    	cout<<"========================================"<<endl;
+	}
+}
+
 // Update personal details
 void updateStudentDetails(int index)
 {
@@ -813,7 +863,7 @@ string generateApplicationID()
     return "A" + intToString(num + 1);
 }
 
-// validation
+// Validation
 bool isWithinThreeMonths(string month)
 {
     if(month.length() != 7) return false;
@@ -941,7 +991,7 @@ void admin_page(int index)
 	}while(adminChoice != 4);
 }
 
-// Display Students Details from students.txt
+// View Students Details from students.txt
 void view_stud(int index)
 {
 	cout<<"\n==================================================================================================="<<endl;
@@ -985,7 +1035,7 @@ void view_stud(int index)
 	in_file.close();
 }
 
-// Display Students Applications details from applications.txt
+// View Students Applications details from applications.txt
 void view_app(int index)
 {
 	cout<<"\n====================================================================="<<endl;
@@ -1023,106 +1073,6 @@ void view_app(int index)
 	             << setw(10) << applications[i].payment << " |\n";
 		}
 		cout<<"====================================================================="<<endl;
-	}
-}
-
-// Load passes from txt.file
-void loadPasses()
-{
-    ifstream file("passes.txt");
-    if(!file) return;
-
-    passCount = 0;
-    string line;
-
-    while(getline(file, line)){
-        stringstream ss(line);
-
-        getline(ss, passes[passCount].passID, ',');
-        getline(ss, passes[passCount].studentID, ',');
-        getline(ss, passes[passCount].startDate, ',');
-        getline(ss, passes[passCount].endDate, ',');
-        getline(ss, passes[passCount].status, ',');
-
-        passCount++;
-    }
-
-    file.close();
-}
-
-// Generate Pass ID
-string generatePassID()
-{
-	ifstream file("passes.txt");
-    string line, lastID = "P1000";
-
-    while(getline(file, line)){
-        stringstream ss(line);
-        getline(ss, lastID, ',');
-    }
-
-    int num = stringToInt(lastID.substr(1));
-    return "P" + intToString(num + 1);
-}
-
-// Create parking pass (passes.txt)
-void createPass(string studentID, string startDate, int months)
-{
-	ofstream outFile("passes.txt", ios::app);
-    string passID = generatePassID();
-
-    int year = stringToInt(startDate.substr(0,4));
-    int month = stringToInt(startDate.substr(5,2));
-    int day = stringToInt(startDate.substr(8,2));
-
-    month += months;
-
-    while(month > 12){
-        month -= 12;
-        year++;
-    }
-
-	string endDate = intToString(year) + "-" + (month < 10 ? "0" : "") + intToString(month) + "-" + (day < 10 ? "0" : "") + intToString(day);
-
-    // into struct
-    passes[passCount].passID = passID;
-    passes[passCount].studentID = studentID;
-    passes[passCount].startDate = startDate;
-    passes[passCount].endDate = endDate;
-    passes[passCount].status = "PendingPayment";
-
-    passCount++;
-
-    // into file
-    outFile << passID << "," << studentID << ","
-            << startDate << "," << endDate << ",PendingPayment" << endl;
-
-    outFile.close();
-}
-
-// Display Students Pass details
-void viewPass(int index)
-{
-    bool found = false;
-    
-    cout<<"\n========================================"<<endl;
-	cout<<"|             PARKING PASS             |"<<endl;
-	cout<<"========================================"<<endl;
-
-	for(int i = 0; i < passCount; i++){
-        if(passes[i].studentID == students[index].id){
-        	cout << "| Pass ID   : " << passes[i].passID << string(30-passes[i].passID.length(), ' ') << "|\n";
-        	cout << "| Start Date: " << passes[i].startDate << string(30-passes[i].startDate.length(), ' ') << "|\n";
-        	cout << "| End Date  : " << passes[i].endDate << string(30-passes[i].endDate.length(), ' ') << "|\n";
-        	cout << "| Status    : " << passes[i].status << string(30-passes[i].status.length(), ' ') << "|\n";
-        	cout<<"========================================"<<endl;
-        	found = true;
-    	}
-	}
-
-	if(!found){
-    	cout<<"|      --NO PARKING PASS FOUND!--      |"<<endl;
-    	cout<<"========================================"<<endl;
 	}
 }
 
@@ -1276,6 +1226,70 @@ string validate_app(string studentID, string appID)
     return "Approved";
 }
 
+// Generate Pass ID
+string generatePassID()
+{
+	ifstream file("passes.txt");
+    string line, lastID = "P1000";
+
+    while(getline(file, line)){
+        stringstream ss(line);
+        getline(ss, lastID, ',');
+    }
+
+    int num = stringToInt(lastID.substr(1));
+    return "P" + intToString(num + 1);
+}
+
+// Create parking pass (passes.txt)
+void createPass(string studentID, string startDate, int months)
+{
+	ofstream outFile("passes.txt", ios::app);
+    string passID = generatePassID();
+
+    int year = stringToInt(startDate.substr(0,4));
+    int month = stringToInt(startDate.substr(5,2));
+    int day = stringToInt(startDate.substr(8,2));
+
+    month += months;
+
+    while(month > 12){
+        month -= 12;
+        year++;
+    }
+
+	string endDate = intToString(year) + "-" + (month < 10 ? "0" : "") + intToString(month) + "-" + (day < 10 ? "0" : "") + intToString(day);
+
+    // into struct
+    passes[passCount].passID = passID;
+    passes[passCount].studentID = studentID;
+    passes[passCount].startDate = startDate;
+    passes[passCount].endDate = endDate;
+    passes[passCount].status = "PendingPayment";
+
+    passCount++;
+
+    // into file
+    outFile << passID << "," << studentID << ","
+            << startDate << "," << endDate << ",PendingPayment" << endl;
+
+    outFile.close();
+}
+
+// Generate Analytics
+void fullReport()
+{
+    cout<<"\n==================================================="<<endl;
+	cout<<"|          SUMMARY OF ANALYTICS REPORTS           |"<<endl;
+	cout<<"==================================================="<<endl;
+	averageRenewal();
+    total_app();
+    utilizationRate();
+    monthlyIncome();
+    growthRate();
+    cout<<"==================================================="<<endl<<endl;
+}
+
 // Average Renewal
 void averageRenewal()
 {
@@ -1417,19 +1431,6 @@ void growthRate()
     cout << "Growth Rate: " << fixed << setprecision(2) << growth << "%" << endl;
 }
 
-// Generate Analytics
-void fullReport()
-{
-    cout<<"\n==================================================="<<endl;
-	cout<<"|          SUMMARY OF ANALYTICS REPORTS           |"<<endl;
-	cout<<"==================================================="<<endl;
-	averageRenewal();
-    total_app();
-    utilizationRate();
-    monthlyIncome();
-    growthRate();
-    cout<<"==================================================="<<endl<<endl;
-}
 
 
 //========================================Payment Part========================================
