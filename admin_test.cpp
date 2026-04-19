@@ -10,7 +10,7 @@
 using namespace std;
 
 //========================================Login Part========================================
-void home_page(int index);
+void home_page();
 
 
 // Struct
@@ -65,7 +65,7 @@ bool isWithinThreeMonths(string month);
 
 
 //========================================Admin Part========================================
-void admin_login(int index);
+void admin_login();
 void admin_page(int index);
 
 // Applicatons Validation Process
@@ -143,25 +143,17 @@ int main()
 {
 	int index;
 	
-	//===============Student Part===============
 	loadStudents();
     loadApplications();
-    
-	//===============Admin Part===============
-	string status, reason, studentID, startDate;
-	int months;
-	bool incompleteDetails = false;
-	bool UnpaidPass = false;
-	int pass = 0;
-	int activeUser = 0, parkingSlot = 100;
+    loadPasses();
 	
-	home_page(index);
+	home_page();
 	
 	return 0;
 }
 
 //===========================================================Login Part===========================================================
-void home_page(int index)
+void home_page()
 {
 	int homeChoice;
 
@@ -182,7 +174,7 @@ void home_page(int index)
 		
 		switch(homeChoice){
 			case 1: loading_screen(); clear_screen(); stud_page(); break;
-			case 2: admin_login(index); break;
+			case 2: admin_login(); break;
 			case 3: paymentModule(); break;
 			case 4: trackingModule(); break;
 			case 5: cout<<"\nTHANK YOU FOR USING CAR PARKING PASS SYSTEM! SEE YOU!"<<endl; break;
@@ -862,8 +854,9 @@ bool isWithinThreeMonths(string month)
 
 //===========================================================Admin Part===========================================================
 // Login admin
-void admin_login(int index)
+void admin_login()
 {
+	int index = 0;
 	string id, username, password;
 	string adminID, adminPassword;
 	bool loginSuccess = false;
@@ -1067,7 +1060,7 @@ string generatePassID()
 
     while(getline(file, line)){
         stringstream ss(line);
-        getline(ss, lastID, '|');
+        getline(ss, lastID, ',');
     }
 
     int num = stringToInt(lastID.substr(1));
@@ -1082,6 +1075,7 @@ void createPass(string studentID, string startDate, int months)
 
     int year = stringToInt(startDate.substr(0,4));
     int month = stringToInt(startDate.substr(5,2));
+    int day = stringToInt(startDate.substr(8,2));
 
     month += months;
 
@@ -1090,9 +1084,7 @@ void createPass(string studentID, string startDate, int months)
         year++;
     }
 
-    string endDate = startDate.substr(0,5) +
-                     (month < 10 ? "0" : "") + intToString(month) +
-                     startDate.substr(7);
+	string endDate = intToString(year) + "-" + (month < 10 ? "0" : "") + intToString(month) + "-" + (day < 10 ? "0" : "") + intToString(day);
 
     // into struct
     passes[passCount].passID = passID;
@@ -1121,10 +1113,10 @@ void viewPass(int index)
 
 	for(int i = 0; i < passCount; i++){
         if(passes[i].studentID == students[index].id){
-        	cout << "| Pass ID   : " << passes[i].passID << string(30 - applications[i].appID.length(), ' ') << "|\n";
-        	cout << "| Start Date: " << passes[i].startDate << string(30 - applications[i].month.length(), ' ') << "|\n";
-        	cout << "| End Date  : " << passes[i].endDate << string(30 - applications[i].status.length(), ' ') << "|\n";
-        	cout << "| Status    : " << passes[i].status << string(30 - applications[i].payment.length(), ' ') << "|\n";
+        	cout << "| Pass ID   : " << passes[i].passID << string(30-passes[i].passID.length(), ' ') << "|\n";
+        	cout << "| Start Date: " << passes[i].startDate << string(30-passes[i].startDate.length(), ' ') << "|\n";
+        	cout << "| End Date  : " << passes[i].endDate << string(30-passes[i].endDate.length(), ' ') << "|\n";
+        	cout << "| Status    : " << passes[i].status << string(30-passes[i].status.length(), ' ') << "|\n";
         	cout<<"========================================"<<endl;
         	found = true;
     	}
