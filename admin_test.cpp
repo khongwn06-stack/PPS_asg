@@ -53,8 +53,8 @@ void admin_login(int index);
 void admin_page(int index);
 
 // Find index in array by matching the ID
-int findStudentIndexByID(string id);
-int findApplicationIndex(string id);
+int findStud_Index(string id);
+int findApp_Index(string id);
 
 // Applicatons Validation Process
 void view_stud(int index);
@@ -868,7 +868,7 @@ void admin_page(int index)
 }
 
 // Find student index in array by matching Student ID
-int findStudentIndexByID(string id)
+int findStud_Index(string id)
 {
     for(int i = 0; i < studentCount; i++){
         if(students[i].id == id){
@@ -879,7 +879,7 @@ int findStudentIndexByID(string id)
 }
 
 // Find application index in array by Application ID
-int findApplicationIndex(string id)
+int findApp_Index(string id)
 {
     for(int i = 0; i < applicationCount; i++){
         if(applications[i].appID == id){
