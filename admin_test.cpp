@@ -25,7 +25,7 @@ struct Application
     string appID, studentID, status, month, payment;
 };
 
-// Global array 
+// Global arrays to store students and applications loaded from text files 
 Student students[400];
 Application applications[400];
 
@@ -52,6 +52,10 @@ bool isWithinThreeMonths(string month);
 void admin_login(int index);
 void admin_page(int index);
 
+// Find index in array by matching the ID
+int findStudentIndexByID(string id);
+int findApplicationIndex(string id);
+
 // Applicatons Validation Process
 void view_stud(int index);
 void view_app(int index);
@@ -71,27 +75,6 @@ void monthlyIncome();
 void growthRate();
 void fullReport();
 
-// Find from txt.file
-int findStudentIndexByID(string id)
-{
-    for(int i = 0; i < studentCount; i++){
-        if(students[i].id == id){
-            return i;
-        }
-    }
-    return -1;
-}
-
-int findApplicationIndex(string id)
-{
-    for(int i = 0; i < applicationCount; i++){
-        if(applications[i].appID == id){
-            return i;
-        }
-    }
-    return -1;
-}
-
 
 //========================================Payment Part========================================
 void paymentModule();
@@ -110,13 +93,13 @@ void limit_input(){
 	}
 } 
 
-//clear sreen after move to the new page
+//clear sreen after move to a new page
 void clear_screen(){
 	cin.get();
 	system("cls"); //clear screen
 }
 
-//loading for 2 second
+//loading screen for 2 second
 void loading_screen(){
 	cout<<"\nLoading";
     for(int i=0; i<2; i++){ //loading for 2 second
@@ -140,12 +123,6 @@ int stringToInt(string str){
     return num;
 }
 
-////Exit System
-//void exit_system(){
-//	loading_screen();
-//	cout<<"\nTHANK YOU FOR USING CAR PARKING PASS SYSTEM! GOODBYE!"<<endl;
-//	exit(0);
-//}
 
 
 //===========================================================Main Menu===========================================================
@@ -890,48 +867,29 @@ void admin_page(int index)
 	}while(adminChoice != 4);
 }
 
-// Generate Pass ID
-string generatePassID()
+// Find student index in array by matching Student ID
+int findStudentIndexByID(string id)
 {
-	ifstream file("passes.txt");
-    string line, lastID = "P1000";
-
-    while(getline(file, line)){
-        stringstream ss(line);
-        getline(ss, lastID, '|');
+    for(int i = 0; i < studentCount; i++){
+        if(students[i].id == id){
+            return i;
+        }
     }
-
-    int num = stringToInt(lastID.substr(1));
-    return "P" + intToString(num + 1);
+    return -1;
 }
 
-// Create Pass txt.file
-void createPass(string studentID, string startDate, int months)
+// Find application index in array by Application ID
+int findApplicationIndex(string id)
 {
-	ofstream outFile("passes.txt", ios::app);
-	string passID = generatePassID();
-
-	int year = stringToInt(startDate.substr(0,4));
-	int month = stringToInt(startDate.substr(5,2));
-	
-	month += months;
-	
-	while(month > 12){
-	    month -= 12;
-	    year++;
-	}
-
-    string endDate = startDate.substr(0,5) +
-                     (month < 10 ? "0" : "") + intToString(month) +
-                     startDate.substr(7);
-
-    outFile << passID << "|" << studentID << "|"
-            << startDate << "|" << endDate << "|PendingPayment" << endl;
-
-    outFile.close();
+    for(int i = 0; i < applicationCount; i++){
+        if(applications[i].appID == id){
+            return i;
+        }
+    }
+    return -1;
 }
 
-// View students details from students.txt
+// Display Students Details from students.txt
 void view_stud(int index)
 {
 	cout<<"\n==================================================================================================="<<endl;
@@ -975,7 +933,7 @@ void view_stud(int index)
 	in_file.close();
 }
 
-// View Student Application details from applications.txt
+// Display Students Applications details from applications.txt
 void view_app(int index)
 {
 	cout<<"\n====================================================================="<<endl;
@@ -1014,6 +972,47 @@ void view_app(int index)
 		}
 		cout<<"====================================================================="<<endl;
 	}
+}
+
+// Generate Pass ID
+string generatePassID()
+{
+	ifstream file("passes.txt");
+    string line, lastID = "P1000";
+
+    while(getline(file, line)){
+        stringstream ss(line);
+        getline(ss, lastID, '|');
+    }
+
+    int num = stringToInt(lastID.substr(1));
+    return "P" + intToString(num + 1);
+}
+
+// Create parking pass (passes.txt)
+void createPass(string studentID, string startDate, int months)
+{
+	ofstream outFile("passes.txt", ios::app);
+	string passID = generatePassID();
+
+	int year = stringToInt(startDate.substr(0,4));
+	int month = stringToInt(startDate.substr(5,2));
+	
+	month += months;
+	
+	while(month > 12){
+	    month -= 12;
+	    year++;
+	}
+
+    string endDate = startDate.substr(0,5) +
+                     (month < 10 ? "0" : "") + intToString(month) +
+                     startDate.substr(7);
+
+    outFile << passID << "|" << studentID << "|"
+            << startDate << "|" << endDate << "|PendingPayment" << endl;
+
+    outFile.close();
 }
 
 // Application Validation
@@ -1116,7 +1115,7 @@ void approve_app(string targetAppID)
     cout << "Approved and pass created!\n";
 }
 
-// Student detail missing
+// Validate application for checking details
 string validate_app(string studentID, string appID)
 {
     // Check student exists in students.txt
@@ -1166,14 +1165,17 @@ string validate_app(string studentID, string appID)
     return "Approved";
 }
 
-// Average Renewal = total of month apply from stud / total apply from stud
+// Average Renewal
 void averageRenewal()
 {
-	/*	int avgRenew = total of month apply from stud / total apply from stud
-		A1 -> 1 month
-		A2 -> 3 months
-		A3 -> 2 months
-		average = (1+3+2)/3 = 2	*/
+	/* Average Renewal = total number of applications / number of students who applied
+	
+	   Exp:	Student A -> 2 applications
+			Student B -> 1 application
+			Student C -> 3 applications
+	
+	   		average = (2+1+3) / 3 = 2
+	*/
 		
 	if(applicationCount == 0){
         cout << "No applications found.\n";
@@ -1206,9 +1208,11 @@ void averageRenewal()
 // Total Applications
 void total_app()
 {
-	/*	int totalApp = new + renew
-		if application.txt = 120 row
-					total = 120	*/
+	/*	Total Applications = total number of records in applications.txt (new + renew)
+	
+		Exp:	application.txt = 120 row
+				total = 120
+	*/
 		
 	cout << "Total Applications: " << applicationCount << endl;
 }
@@ -1216,10 +1220,15 @@ void total_app()
 // Car Park Utilization Rate
 void utilizationRate()
 {
-	/*	double uRate = total parking time / mix parking time
-		if 1000 parking slots, 10.5hours/day, student total park 7000 hours
-			mix = 1000 Ã— 10.5 = 10500 hours
-			Utilization = 7000 / 10500 = 66.7%	*/
+	/*	Utilization Rate = total usage units / maximum parking capacity
+
+		Assumption:	- Each approved application represents 1 unit of usage
+					- Total capacity = parking slots × operating hours
+		
+		Exp:	1000 slots × 10.5 hours = 10500 total capacity units
+				If 100 approved applications:
+					Utilization Rate = 100 / 10500 × 100%
+	*/
 			
 	const int slots = 1000;
 	const double hoursPerDay = 10.5;
@@ -1227,44 +1236,51 @@ void utilizationRate()
     double maxCapacity = slots * hoursPerDay;
     double used = 0;
 
-    for(int i = 0; i < applicationCount; i++){
-        if(applications[i].status == "Approved"){
-            used += 1; // simplified usage unit
-        }
-    }
+//    for(int i = 0; i < applicationCount; i++){
+//        if(applications[i].status == "Approved"){
+//            used += 1; // simplified usage unit
+//        }
+//    }
 
     double rate = (used / maxCapacity) * 100;
 
     cout << "Utilization Rate: " << fixed << setprecision(2) << rate << "%" << endl;
 }
 
-// Monthly Income = total of payments.txt
+// Monthly Income
 void monthlyIncome()
 {
-	/*	int monthIn = total of payments.txt
-		A1 -> RM50
-		A2 -> RM50
-		A3 -> RM30
-		Total = RM130	*/
+	/*	Monthly Income = total payment collected within a specific month
+	
+		- Read payments.txt
+		- Filter by selected month
+		- Sum all payment amounts
+	*/
 		
-	double totalIncome = 0;
+	double monthIncome = 0;
+	
+//	for(int i = 0; i < applicationCount; i++){
+//	    if(applications[i].status == "Approved"){
+//	        monthIncome += 50; // per pass
+//	    }
+//	}
 
-//    for(int i = 0; i < applicationCount; i++){
-//        if(applications[i].status == "Approved"){
-//            totalIncome += 50; // fixed rate per pass
-//        }
-//    }
-
-    cout << "Monthly Income: RM " << totalIncome << endl;
+    cout << "Monthly Income: RM " << monthIncome << endl;
 }
 
-// Growth Rate = (this month - last month) / last month * 100%
+// Growth Rate
 void growthRate()
 {
-	/*	double gRate = (this month - last month) / last month * 100%
-		last month = RM1000
-		this month = RM1200
-		Growth = (1200-1000)/1000 Ã— 100 = 20%	*/
+	/*	Growth Rate = (current month income - previous month income) / previous month × 100%
+	
+		Current implementation uses a simplified estimation:
+		- First half of records is treated as previous month
+		- Second half is treated as current month
+	
+		Exp:	previous = RM1000
+				current = RM1200
+				growth = 20%
+	*/
 		
 	double current = 0;
     double previous = 0;
