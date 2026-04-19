@@ -670,10 +670,10 @@ void updateStudentDetails(int index)
         cout<<"\n================================================"<<endl;
 		cout<<"|            UPDATE PERSONAL DETAILS           |"<<endl;
 		cout<<"================================================"<<endl;
-		cout<<"| 1. Full Name   : " << students[index].name << string(30-students[index].name.length(), ' ') << "|"<<endl;
-		cout<<"| 2. Faculty     : " << students[index].faculty << string(30-students[index].faculty.length(), ' ') << "|"<<endl;
-		cout<<"| 3. Phone No.   : " << students[index].phone << string(30-students[index].phone.length(), ' ') << "|"<<endl;
-		cout<<"| 4. Vehicle No. : " << students[index].vehicle << string(30-students[index].vehicle.length(), ' ') << "|"<<endl;
+		cout<<"| 1. Full Name   : " << students[index].name << string(28-students[index].name.length(), ' ') << "|"<<endl;
+		cout<<"| 2. Faculty     : " << students[index].faculty << string(28-students[index].faculty.length(), ' ') << "|"<<endl;
+		cout<<"| 3. Phone No.   : " << students[index].phone << string(28-students[index].phone.length(), ' ') << "|"<<endl;
+		cout<<"| 4. Vehicle No. : " << students[index].vehicle << string(28-students[index].vehicle.length(), ' ') << "|"<<endl;
 		cout<<"|----------------------------------------------|"<<endl;
 		cout<<"| 0. Return to Student Dashboard               |"<<endl;
 		cout<<"================================================"<<endl;
