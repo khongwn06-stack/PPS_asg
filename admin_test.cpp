@@ -955,7 +955,7 @@ void view_app(int index)
 		cout<<"|-------------------------------------------------------------------|"<<endl;
 
 		for(int i = 0; i < applicationCount; i++){
-	        int idx = findStudentIndexByID(applications[i].studentID);
+	        int idx = findStud_Index(applications[i].studentID);
 	        cout<<"| ";
 	        
 	        if(idx != -1){
@@ -1033,7 +1033,7 @@ void app_validation()
 			return;
 		}
 	    
-	    int appIndex = findApplicationIndex(appID);
+	    int appIndex = findApp_Index(appID);
 	
 	    if(appIndex == -1){
 	        cout << "Application NOT FOUND!\n" << endl;
@@ -1046,7 +1046,7 @@ void app_validation()
 	    cout<<"| Application ID: " << applications[appIndex].appID << string(30-applications[appIndex].appID.length(), ' ') <<"|"<<endl;
 	    cout<<"| Student ID    : " << applications[appIndex].studentID << string(30-applications[appIndex].studentID.length(), ' ') <<"|"<<endl;
 	    
-	    int studentIndex = findStudentIndexByID(applications[appIndex].studentID);
+	    int studentIndex = findStud_Index(applications[appIndex].studentID);
 	    if(studentIndex != -1){
 		    cout<<"| Student Name  : " << students[studentIndex].name << string(30-students[studentIndex].name.length(), ' ') <<"|"<<endl;
 		} else {
@@ -1098,7 +1098,7 @@ void app_validation()
 // Student details found
 void approve_app(string targetAppID)
 {
-    int idx = findApplicationIndex(targetAppID);
+    int idx = findApp_Index(targetAppID);
     if(idx == -1){
         cout << "Application not found\n";
         return;
@@ -1153,7 +1153,7 @@ string validate_app(string studentID, string appID)
     }
 
     // Check application exists + valid data
-    int appIndex = findApplicationIndex(appID);
+    int appIndex = findApp_Index(appID);
     if(appIndex == -1){
         return "Application not found";
     }
