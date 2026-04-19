@@ -13,7 +13,6 @@ using namespace std;
 void home_page(int index);
 
 
-//========================================Student Part========================================
 // Struct
 struct Student 
 {
@@ -25,21 +24,38 @@ struct Application
     string appID, studentID, status, month, payment;
 };
 
-// Global arrays to store students and applications loaded from text files 
+struct Pass
+{
+    string passID, studentID, startDate, endDate, status; // status = Active / Expired / PendingPayment
+};
+
+// Global arrays to store, loaded from txt.file
 Student students[400];
 Application applications[400];
+Pass passes[400];
 
 int studentCount = 0;
 int applicationCount = 0;
+int passCount = 0;
 
+// Load from txt.file
+void loadStudents();
+void loadApplications();
+void loadPasses();
+
+// Find index in array by matching ID
+int findStud_Index(string id);
+int findApp_Index(string id);
+int findPassIndex(string studentID);
+
+//========================================Student Part========================================
 void stud_page();
 void registerStudent();
 void loginStudent();
-void loadStudents();
-void loadApplications();
 
 void successLoginS(int index);
 void studentMenu(int studentIndex);
+
 void submitApplication(int studentIndex);
 void renewApplication(int studentIndex); 
 void viewApplication(int studentIndex);
@@ -52,10 +68,6 @@ bool isWithinThreeMonths(string month);
 void admin_login(int index);
 void admin_page(int index);
 
-// Find index in array by matching the ID
-int findStud_Index(string id);
-int findApp_Index(string id);
-
 // Applicatons Validation Process
 void view_stud(int index);
 void view_app(int index);
@@ -66,6 +78,7 @@ string validate_app(string studentID, string appID);
 // Pass.txt
 string generatePassID();
 void createPass(string studentID, string startDate, int months);
+void viewPass(int index);
 
 // Generate Analytics
 void averageRenewal();
@@ -178,6 +191,42 @@ void home_page(int index)
 	}while(homeChoice != 5);
 }
 
+
+//===========================================================Find index in array by matching ID===========================================================
+// Find student index in array by matching Student ID
+int findStud_Index(string id)
+{
+    for(int i = 0; i < studentCount; i++){
+        if(students[i].id == id){
+            return i;
+        }
+    }
+    return -1;
+}
+
+// Find application index in array by Application ID
+int findApp_Index(string id)
+{
+    for(int i = 0; i < applicationCount; i++){
+        if(applications[i].appID == id){
+            return i;
+        }
+    }
+    return -1;
+}
+
+// Find pass index in array by matching Student ID
+int findPassIndex(string studentID)
+{
+    for(int i = 0; i < passCount; i++){
+        if(passes[i].studentID == studentID){
+            return i;
+        }
+    }
+    return -1;
+}
+
+
 //===========================================================Student Part===========================================================
 void stud_page()
 {
@@ -260,13 +309,19 @@ void registerStudent()
 
     cout<<"Enter full name (PRESS 0 to return): ";
     getline(cin, input);
-    if(input == "0") return;  //return = return to the last function
+    if(input == "0"){
+			cout<<endl;
+			return;  //return = return to the last function
+		}
     s.name = input;
 
     while(true){
         cout<<"Enter student ID (PRESS 0 to return): ";
         getline(cin, input);
-        if(input == "0") return;
+        if(input == "0"){
+			cout<<endl;
+			return;
+		}
 
         bool duplicate = false;
         
@@ -283,22 +338,34 @@ void registerStudent()
 
     cout<<"Enter faculty (PRESS 0 to return): ";
     getline(cin, input);
-    if(input == "0") return;
+    if(input == "0"){
+			cout<<endl;
+			return;
+		}
     s.faculty = input;
 
     cout<<"Enter phone number (PRESS 0 to return): ";
     getline(cin, input);
-    if(input == "0") return;
+    if(input == "0"){
+			cout<<endl;
+			return;
+		}
     s.phone = input;
 
     cout<<"Enter vehicle number (PRESS 0 to return): ";
     getline(cin, input);
-    if(input == "0") return;
+    if(input == "0"){
+			cout<<endl;
+			return;
+		}
     s.vehicle = input;
 
     cout<<"Set password (PRESS 0 to return): ";
     getline(cin, input);
-    if(input == "0") return;
+    if(input == "0"){
+			cout<<endl;
+			return;
+		}
     s.password = input;
 
     students[studentCount] = s;
@@ -317,20 +384,26 @@ void loginStudent()
 {
     string id, pw;
     int index = -1;
+    
+    cout<<"\n==================================================="<<endl;
+    cout<<"|                 STUDENT LOGIN                   |"<<endl;
+    cout<<"==================================================="<<endl;
 
     while(true)
     {
-        cout<<"\n==================================================="<<endl;
-        cout<<"|                 STUDENT LOGIN                   |"<<endl;
-        cout<<"==================================================="<<endl;
-
         cout<<"Student ID (PRESS 0 to return): ";
         cin>>id;
-        if(id == "0") return;
+        if(id == "0"){
+			cout<<endl;
+			return;
+		}
 
         cout<<"Password (PRESS 0 to return): ";
         cin>>pw;
-        if(pw == "0") return;
+        if(pw == "0"){
+			cout<<endl;
+			return;
+		}
 
         bool idFound = false;
 
@@ -343,7 +416,7 @@ void loginStudent()
                     break;
                 }
                 else{
-                    cout<<"\nERROR: Incorrect password!"<<endl;
+                    cout<<"\nERROR: Incorrect password!"<<endl<<endl;
                     break;
                 }
             }
@@ -390,28 +463,30 @@ void studentMenu(int index)
         cout<<"| 1. Apply New Pass                               |"<<endl;
         cout<<"| 2. Renew Pass                                   |"<<endl;
         cout<<"| 3. View Application Status                      |"<<endl;
-        cout<<"| 4. Update Personal Details                      |"<<endl;
-        cout<<"| 5. Back to Student Module                       |"<<endl;
+        cout<<"| 4. View Parking Pass                            |"<<endl;
+        cout<<"| 5. Update Personal Details                      |"<<endl;
+        cout<<"| 6. Back to Student Module                       |"<<endl;
         cout<<"==================================================="<<endl;
 
         cout<<"Select an option: ";
         cin>>studchoice;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
         switch(studchoice){
             case 1: submitApplication(index); break;
             case 2: renewApplication(index); break;
             case 3: viewApplication(index); break;
-            case 4: updateStudentDetails(index); break;
-            case 5: cout<<"\nReturn to Student Module..."<<endl; return;
-            default:limit_input(); cout<<"\nInvalid Option! Please Enter the Number 1-5."<<endl; 
+            case 4: viewPass(index); break;
+			case 5: updateStudentDetails(index); break;
+            case 6: cout<<"\nReturn to Student Module...\n"; loading_screen(); clear_screen(); return;
+            default:limit_input(); cout<<"\nInvalid Option! Please Enter the Number 1-6."<<endl; 
         }
-    }while(studchoice != 5);
+    }while(studchoice != 6);
 }
 
 // Apply New Pass
 void submitApplication(int index)
 {
+	cin.ignore(numeric_limits<streamsize>::max(), '\n');
     string month;
 
     while(true)
@@ -495,6 +570,7 @@ void submitApplication(int index)
 // Renew Pass
 void renewApplication(int index)
 {
+	cin.ignore(numeric_limits<streamsize>::max(), '\n');
 	ifstream in_file("applications.txt");
     bool found = false;
 
@@ -662,7 +738,7 @@ void viewApplication(int index)
 // Update personal details
 void updateStudentDetails(int index)
 {
-    int studDchoice;
+	int studDchoice;
     bool updated = false;
     string temp;
 
@@ -710,7 +786,7 @@ void updateStudentDetails(int index)
 		                students[index].vehicle = temp;
 		                updated = true;
 		            }; break; 
-			case 0: cout<<"\nReturn to Student Dashboard...\n"; return;
+			case 0: return;
 			default: limit_input(); cout<<"Invalid Option! Please Enter the Number 0-4."<<endl;
 		}
 
@@ -735,9 +811,16 @@ void updateStudentDetails(int index)
 // Generate Application ID
 string generateApplicationID()
 {
-    stringstream ss;
-    ss << "A" << (applicationCount + 1);
-    return ss.str();
+    ifstream file("applications.txt");
+    string line, lastID = "A1000";
+
+    while(getline(file, line)){
+        stringstream ss(line);
+        getline(ss, lastID, ',');
+    }
+
+    int num = stringToInt(lastID.substr(1));
+    return "A" + intToString(num + 1);
 }
 
 // validation
@@ -831,7 +914,7 @@ void admin_login(int index)
 		file.close();
 		
 		if(!loginSuccess){
-		    cout<<"\nLogin Failed! Please try again."<<endl;
+		    cout<<"\nLogin Failed! Please try again."<<endl<<endl;
 		}
 	}while(!loginSuccess);
 	cout<<"\nLOGIN SUCCESSFULLY!"<<endl;
@@ -865,28 +948,6 @@ void admin_page(int index)
 			default: limit_input(); cout<<"\nInvalid Option! Please Enter the Number 1-4."<<endl;
 		}
 	}while(adminChoice != 4);
-}
-
-// Find student index in array by matching Student ID
-int findStud_Index(string id)
-{
-    for(int i = 0; i < studentCount; i++){
-        if(students[i].id == id){
-            return i;
-        }
-    }
-    return -1;
-}
-
-// Find application index in array by Application ID
-int findApp_Index(string id)
-{
-    for(int i = 0; i < applicationCount; i++){
-        if(applications[i].appID == id){
-            return i;
-        }
-    }
-    return -1;
 }
 
 // Display Students Details from students.txt
@@ -974,6 +1035,30 @@ void view_app(int index)
 	}
 }
 
+// Load passes from txt.file
+void loadPasses()
+{
+    ifstream file("passes.txt");
+    if(!file) return;
+
+    passCount = 0;
+    string line;
+
+    while(getline(file, line)){
+        stringstream ss(line);
+
+        getline(ss, passes[passCount].passID, ',');
+        getline(ss, passes[passCount].studentID, ',');
+        getline(ss, passes[passCount].startDate, ',');
+        getline(ss, passes[passCount].endDate, ',');
+        getline(ss, passes[passCount].status, ',');
+
+        passCount++;
+    }
+
+    file.close();
+}
+
 // Generate Pass ID
 string generatePassID()
 {
@@ -993,26 +1078,62 @@ string generatePassID()
 void createPass(string studentID, string startDate, int months)
 {
 	ofstream outFile("passes.txt", ios::app);
-	string passID = generatePassID();
+    string passID = generatePassID();
 
-	int year = stringToInt(startDate.substr(0,4));
-	int month = stringToInt(startDate.substr(5,2));
-	
-	month += months;
-	
-	while(month > 12){
-	    month -= 12;
-	    year++;
-	}
+    int year = stringToInt(startDate.substr(0,4));
+    int month = stringToInt(startDate.substr(5,2));
+
+    month += months;
+
+    while(month > 12){
+        month -= 12;
+        year++;
+    }
 
     string endDate = startDate.substr(0,5) +
                      (month < 10 ? "0" : "") + intToString(month) +
                      startDate.substr(7);
 
-    outFile << passID << "|" << studentID << "|"
-            << startDate << "|" << endDate << "|PendingPayment" << endl;
+    // into struct
+    passes[passCount].passID = passID;
+    passes[passCount].studentID = studentID;
+    passes[passCount].startDate = startDate;
+    passes[passCount].endDate = endDate;
+    passes[passCount].status = "PendingPayment";
+
+    passCount++;
+
+    // into file
+    outFile << passID << "," << studentID << ","
+            << startDate << "," << endDate << ",PendingPayment" << endl;
 
     outFile.close();
+}
+
+// Display Students Pass details
+void viewPass(int index)
+{
+    bool found = false;
+    
+    cout<<"\n========================================"<<endl;
+	cout<<"|             PARKING PASS             |"<<endl;
+	cout<<"========================================"<<endl;
+
+	for(int i = 0; i < passCount; i++){
+        if(passes[i].studentID == students[index].id){
+        	cout << "| Pass ID   : " << passes[i].passID << string(30 - applications[i].appID.length(), ' ') << "|\n";
+        	cout << "| Start Date: " << passes[i].startDate << string(30 - applications[i].month.length(), ' ') << "|\n";
+        	cout << "| End Date  : " << passes[i].endDate << string(30 - applications[i].status.length(), ' ') << "|\n";
+        	cout << "| Status    : " << passes[i].status << string(30 - applications[i].payment.length(), ' ') << "|\n";
+        	cout<<"========================================"<<endl;
+        	found = true;
+    	}
+	}
+
+	if(!found){
+    	cout<<"|      --NO PARKING PASS FOUND!--      |"<<endl;
+    	cout<<"========================================"<<endl;
+	}
 }
 
 // Application Validation
