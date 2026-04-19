@@ -141,8 +141,6 @@ int stringToInt(string str){
 //===========================================================Main Menu===========================================================
 int main()
 {
-	int index;
-	
 	loadStudents();
     loadApplications();
     loadPasses();
