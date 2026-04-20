@@ -1392,37 +1392,41 @@ void total_app()
 // Car Park Utilization Rate
 void utilizationRate()
 {
-	/*	Utilization Rate = total usage units / maximum parking capacity
+	// Utilization Rate = Total Parking Hours Used / (Total Slots × Hours Per Day × Days)
+	const int totalSlots = 1000;
+    int activePass = 0;
 
-		Assumption:	- Each approved application represents 1 unit of usage
-					- Total capacity = parking slots × operating hours
-		
-		Exp:	1000 slots × 10.5 hours = 10500 total capacity units
-				If 100 approved applications:
-					Utilization Rate = 100 / 10500 × 100%
-	*/
-			
-	const int slots = 1000;
-	const double hoursPerDay = 10.5;
+    int hourPerDay = 24;
+    int dayPerMonth = 30;
 
-    double maxCapacity = slots * hoursPerDay;
-    double used = 0;
+    for(int i = 0; i < passCount; i++){
+        if(passes[i].status == "Active"){
+            activePass++;
+        }
+    }
 
-//    for(int i = 0; i < applicationCount; i++){
-//        if(applications[i].status == "Approved"){
-//            used += 1; // simplified usage unit
-//        }
-//    }
+    // Correct formula based on your comment
+    double totalCapacity = totalSlots * hourPerDay * dayPerMonth;
+    
+    // Since activePass is NOT hours, this is simplified interpretation
+    double rate = (activePass / totalCapacity) * 100;
 
-    double rate = (used / maxCapacity) * 100;
-
-    cout << "\nUtilization Rate: " << fixed << setprecision(2) << rate << "%" <<endl<<endl;
+	cout<<"\n============================================="<<endl;
+	cout<<"|         Car Park Utilization Rate         |"<<endl;
+	cout<<"============================================="<<endl;
+    cout<<"| Total Parking Hours Used : " << activePass << string(15 - intToString(activePass).length(), ' ') << "|" << endl;
+	cout<<"| Total Slots              : " << totalSlots << string(15 - intToString(totalSlots).length(), ' ') << "|" << endl;
+	cout<<"| Hours Per Day            : " << hourPerDay << string(15 - intToString(hourPerDay).length(), ' ') << "|" << endl;
+	cout<<"| Day per month            : " << dayPerMonth << string(15 - intToString(dayPerMonth).length(), ' ') << "|" << endl;
+	cout<<"| Utilization Rate         : " << fixed << setprecision(2) << rate << "%" << string(11 - intToString((int)rate).length(), ' ') << "|" << endl;    
+	cout<<"============================================="<<endl<<endl;
     return;
 }
 
 // Monthly Income per Year 
 void monthlyIncome()
 {
+	// Monthly Income per Year = Total Payment Collected in that Month
 	cout<<"\n==================================="<<endl;
 	cout<<"|     Monthly Income per Year     |"<<endl;
 	cout<<"==================================="<<endl;
@@ -1501,37 +1505,39 @@ void monthlyIncome()
 // Growth Rate
 void growthRate()
 {
-	/*	Growth Rate = (current month income - previous month income) / previous month × 100%
-	
-		Current implementation uses a simplified estimation:
-		- First half of records is treated as previous month
-		- Second half is treated as current month
-	
-		Exp:	previous = RM1000
-				current = RM1200
-				growth = 20%
-	*/
-		
-	double current = 0;
+	// Growth Rate (%) = ((Current Month Income - Previous Month Income) / Previous Month Income) × 100
+	if(applicationCount < 2){
+        cout << "\nNot enough data for growth rate.\n";
+        return;
+    }
+
+    string latestMonth = applications[applicationCount - 1].month;
+    string prevMonth = applications[applicationCount - 2].month;
+
+    double current = 0;
     double previous = 0;
 
     for(int i = 0; i < applicationCount; i++){
-        if(applications[i].status == "Approved"){
-            current += 50;
+        if(applications[i].status != "Approved") continue;
 
-            // fake split for demo (first half = previous)
-            if(i < applicationCount / 2){
-                previous += 50;
-            }
+        if(applications[i].month == latestMonth){
+            current += 50;
+        }
+        else if(applications[i].month == prevMonth){
+            previous += 50;
         }
     }
 
     if(previous == 0){
-        cout << "\nGrowth Rate: N/A (no previous data)" <<endl<<endl;
+        cout << "\nGrowth Rate: N/A\n";
         return;
     }
 
     double growth = ((current - previous) / previous) * 100;
+
+    cout << "\nCurrent Month (" << latestMonth << ") Income: RM" << current;
+    cout << "\nPrevious Month (" << prevMonth << ") Income: RM" << previous;
+
     cout << "\nGrowth Rate: " << fixed << setprecision(2) << growth << "%" <<endl<<endl;
     return;
 }
