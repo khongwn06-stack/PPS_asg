@@ -1,173 +1,194 @@
-#include<iostream>
-#include<fstream>
-#include<string>
-#include<sstream>
+#include <iostream>
+#include <string> 
+#include <ctime>
 using namespace std;
 
 
-// Generate Payment ID 
+//========================================Payment Part========================================
+void paymentModule();
+void paymentMenu(int studentIndex);
+bool checkApproval(string studentID);
+string generatePaymentID();
+string getCurrentDateTime();
+string choosePaymentMethod();
+
+
+//========================================Payment Part========================================
+// Generate Payment ID
 string generatePaymentID()
 {
-    static int count = 1000;
-    count++;
+    static int count = 1;
+    return "PID" + intToString(1000 + count++);
+}
+
+// Get current date & time
+string getCurrentDateTime()
+{
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
 
     stringstream ss;
-    ss << "P" << count;
+    ss << (1900 + ltm->tm_year) << "-"
+       << (1 + ltm->tm_mon) << "-"
+       << ltm->tm_mday << " "
+       << ltm->tm_hour << ":"
+       << ltm->tm_min;
 
     return ss.str();
 }
 
-
-// Save to File 
-void savePayment(string pid, string sid, string type,
-                 int hours, int months, double amount)
+// Check if student has APPROVED application
+bool checkApproval(string studentID)
 {
-    ofstream file("payments.txt", ios::app);
-
-    file << pid << ","
-         << sid << ","
-         << type << ","
-         << hours << ","
-         << months << ","
-         << amount << endl;
-
-    file.close();
+    for(int i = 0; i < applicationCount; i++)
+    {
+        if(applications[i].studentID == studentID &&
+           applications[i].status == "Approved" &&
+           applications[i].payment == "Unpaid")
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
-
-// Daily Payment 
-void dailyPayment()
+// Choose payment method
+string choosePaymentMethod()
 {
-    string studentID;
-    int hours;
+    int opt;
 
-    cout<<"\n--- DAILY PAYMENT ---\n";
+    cout << "\nSelect Payment Method:\n";
+    cout << "1. TNG QR\n";
+    cout << "2. DuitNow QR\n";
+    cout << "3. Credit/Debit Card\n";
+    cout << "4. International Card\n";
+    cout << "Enter choice: ";
+    cin >> opt;
 
-    cout<<"Enter Student ID: ";
-    cin>>studentID;
-
-    cout<<"Enter hours parked (1 - 10): ";
-    cin>>hours;
-
-    // validation
-    if(hours < 1 || hours > 10)
+    switch(opt)
     {
-        cout<<"Invalid hours!\n";
+        case 1: return "TNG QR";
+        case 2: return "DuitNow QR";
+        case 3: return "Card";
+        case 4: return "International Card";
+        default: return "Invalid";
+    }
+}
+
+// MAIN PAYMENT MENU (called after login)
+void paymentMenu(int studentIndex)
+{
+    string sid = students[studentIndex].id;
+
+    cout << "\n====================================\n";
+    cout << "|           PAYMENT MODULE         |\n";
+    cout << "====================================\n";
+
+    // ===== CHECK APPROVAL =====
+    if(!checkApproval(sid))
+    {
+        cout << "No APPROVED application or already PAID!\n";
         return;
     }
 
-    double amount = hours * 0.5;
+    cout << "Application Approved! Proceeding...\n";
 
-    string pid = generatePaymentID();
-
-    savePayment(pid, studentID, "DAILY", hours, 0, amount);
-
-    cout<<"\nPayment Successful!\n";
-
-    cout<<"===== RECEIPT =====\n";
-    cout<<"Payment ID: "<<pid<<endl;
-    cout<<"Student ID: "<<studentID<<endl;
-    cout<<"Type: DAILY\n";
-    cout<<"Hours: "<<hours<<endl;
-    cout<<"Amount: RM"<<amount<<endl;
-    cout<<"===================\n";
-}
-
-
-// Monthly Payment 
-void monthlyPayment()
-{
-    string studentID;
     int months;
 
-    cout<<"\n--- MONTHLY PAYMENT ---\n";
-
-    cout<<"Enter Student ID: ";
-    cin>>studentID;
-
-    cout<<"Enter number of months: ";
-    cin>>months;
+    cout << "Enter number of months: ";
+    cin >> months;
 
     if(months <= 0)
     {
-        cout<<"Invalid months!\n";
+        cout << "Invalid input!\n";
         return;
     }
 
-    double amount = months * 100;
+    // ===== MONTHLY PAYMENT =====
+    double monthlyPayment = months * 30;
 
+    // ===== DAILY COMPARISON (6–9 HOURS) =====
+    int minH = 6, maxH = 9;
+
+    double minDaily = minH * 0.5 * 30 * months;
+    double maxDaily = maxH * 0.5 * 30 * months;
+
+    double minSave = minDaily - monthlyPayment;
+    double maxSave = maxDaily - monthlyPayment;
+
+    // ===== PAYMENT METHOD =====
+    string method = choosePaymentMethod();
+
+    if(method == "Invalid")
+    {
+        cout << "Invalid method!\n";
+        return;
+    }
+
+    // ===== GENERATE PAYMENT ID =====
     string pid = generatePaymentID();
 
-    savePayment(pid, studentID, "MONTHLY", 0, months, amount);
+    // ===== DATE TIME =====
+    string dateTime = getCurrentDateTime();
 
-    cout<<"\nPayment Successful!\n";
-
-    cout<<"===== RECEIPT =====\n";
-    cout<<"Payment ID: "<<pid<<endl;
-    cout<<"Student ID: "<<studentID<<endl;
-    cout<<"Type: MONTHLY\n";
-    cout<<"Months: "<<months<<endl;
-    cout<<"Amount: RM"<<amount<<endl;
-    cout<<"===================\n";
-}
-
-
-// View Payment History 
-void viewPaymentHistory()
-{
-    string id, line;
-
-    cout<<"\nEnter Student ID: ";
-    cin>>id;
-
-    ifstream file("payments.txt");
-
-    cout<<"\n=== PAYMENT HISTORY ===\n";
-
-    while(getline(file, line))
+    // ===== UPDATE APPLICATION STATUS =====
+    for(int i = 0; i < applicationCount; i++)
     {
-        if(line.find(id) != string::npos)
+        if(applications[i].studentID == sid &&
+           applications[i].status == "Approved" &&
+           applications[i].payment == "Unpaid")
         {
-            cout<<line<<endl;
+            applications[i].payment = "Paid";
         }
     }
 
-    file.close();
-}
+    // ===== SAVE BACK TO FILE =====
+    ofstream file("applications.txt");
 
-
-// Payment Menu
-void paymentMenu()
-{
-    int choice;
-
-    do
+    for(int i = 0; i < applicationCount; i++)
     {
-        cout<<"\n===== PAYMENT MENU =====\n";
-        cout<<"1. Daily Payment\n";
-        cout<<"2. Monthly Payment\n";
-        cout<<"3. View Payment History\n";
-        cout<<"4. Exit\n";
+        file << applications[i].appID << ","
+             << applications[i].studentID << ","
+             << applications[i].status << ","
+             << applications[i].month << ","
+             << applications[i].payment << endl;
+    }
 
-        cout<<"Enter choice: ";
-        cin>>choice;
+    file.close();
 
-        if(choice == 1)
-            dailyPayment();
+    // ===== SAVE PAYMENT RECORD =====
+    ofstream payFile("payments.txt", ios::app);
 
-        else if(choice == 2)
-            monthlyPayment();
+    payFile << pid << ","
+            << sid << ","
+            << method << ","
+            << months << ","
+            << monthlyPayment << ","
+            << dateTime << endl;
 
-        else if(choice == 3)
-            viewPaymentHistory();
+    payFile.close();
 
-    } while(choice != 4);
+    // ===== RECEIPT =====
+    cout << "\n====================================\n";
+    cout << "|              RECEIPT             |\n";
+    cout << "====================================\n";
+
+    cout << "Payment ID   : " << pid << endl;
+    cout << "Student ID   : " << sid << endl;
+    cout << "Months       : " << months << endl;
+    cout << "Amount Paid  : RM" << monthlyPayment << endl;
+    cout << "Method       : " << method << endl;
+    cout << "Date & Time  : " << dateTime << endl;
+
+    cout << "\n--- Cost Comparison ---\n";
+    cout << "Daily (6 to 9 hours): RM" << minDaily << " - RM" << maxDaily << endl;
+    cout << "You saved: RM" << minSave << " - RM" << maxSave << endl;
+
+    cout << "====================================\n";
 }
 
-
-// MAIN 
-int main()
+// Home page direct access 
+void paymentModule()
 {
-    paymentMenu();
-    return 0;
+    cout << "\nPlease login through Student Module to proceed.\n";
 }
