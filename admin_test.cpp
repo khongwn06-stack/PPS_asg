@@ -59,6 +59,7 @@ void submitApplication(int studentIndex);
 void renewApplication(int studentIndex); 
 void viewApplication(int studentIndex);
 void viewPass(int index);
+void payment(int index);
 void updateStudentDetails(int studentIndex);
 
 // Applications.txt
@@ -89,9 +90,6 @@ void utilizationRate();
 void monthlyIncome();
 void growthRate();
 
-
-//========================================Payment Part========================================
-void paymentModule();
 
 //========================================Tracking Part========================================
 void trackingModule();
@@ -163,9 +161,8 @@ void home_page()
         cout<<"==================================================="<<endl;
         cout<<"| 1. Student Module                               |"<<endl;
         cout<<"| 2. Admin Module                                 |"<<endl;
-        cout<<"| 3. Payment Module                               |"<<endl;
-        cout<<"| 4. Tracking & Alert System Module               |"<<endl;
-        cout<<"| 5. Exit System                                  |"<<endl;
+        cout<<"| 3. Tracking & Alert System Module               |"<<endl;
+        cout<<"| 4. Exit System                                  |"<<endl;
         cout<<"==================================================="<<endl;
 
         cout<<"Select an option: ";
@@ -174,12 +171,11 @@ void home_page()
 		switch(homeChoice){
 			case 1: loading_screen(); clear_screen(); stud_page(); break;
 			case 2: admin_login(); break;
-			case 3: paymentModule(); break;
-			case 4: trackingModule(); break;
-			case 5: cout<<"\nTHANK YOU FOR USING CAR PARKING PASS SYSTEM! SEE YOU!"<<endl; break;
-			default:limit_input(); cout<<"Invalid Option! Please Enter the Number 1-5."<<endl;
+			case 3: trackingModule(); break;
+			case 4: cout<<"\nTHANK YOU FOR USING CAR PARKING PASS SYSTEM! SEE YOU!"<<endl; break;
+			default:limit_input(); cout<<"Invalid Option! Please Enter the Number 1-4."<<endl;
 		}
-	}while(homeChoice != 5);
+	}while(homeChoice != 4);
 }
 
 // Load students from txt.file
@@ -478,8 +474,9 @@ void studentMenu(int index)
         cout<<"| 2. Renew Pass                                   |"<<endl;
         cout<<"| 3. View Application Status                      |"<<endl;
         cout<<"| 4. View Parking Pass                            |"<<endl;
-        cout<<"| 5. Update Personal Details                      |"<<endl;
-        cout<<"| 6. Back to Student Module                       |"<<endl;
+        cout<<"| 5. Payment                                      |"<<endl;
+        cout<<"| 6. Update Personal Details                      |"<<endl;
+        cout<<"| 7. Back to Student Module                       |"<<endl;
         cout<<"==================================================="<<endl;
 
         cout<<"Select an option: ";
@@ -490,11 +487,12 @@ void studentMenu(int index)
             case 2: renewApplication(index); break;
             case 3: viewApplication(index); break;
             case 4: viewPass(index); break;
-			case 5: updateStudentDetails(index); break;
-            case 6: cout<<"\nReturn to Student Module...\n"; loading_screen(); clear_screen(); return;
-            default:limit_input(); cout<<"\nInvalid Option! Please Enter the Number 1-6."<<endl; 
+            case 5: payment(index); break;
+			case 6: updateStudentDetails(index); break;
+            case 7: cout<<"\nReturn to Student Module...\n"; loading_screen(); clear_screen(); return;
+            default:limit_input(); cout<<"\nInvalid Option! Please Enter the Number 1-7."<<endl; 
         }
-    }while(studchoice != 6);
+    }while(studchoice != 7);
 }
 
 // Apply New Pass
@@ -749,6 +747,12 @@ void viewApplication(int index)
 	}
 }
 
+// Payment
+void payment(int index)
+{
+	cout << "\n[PAYMENT MODULE - NOT IMPLEMENTED YET]\n";
+}
+
 // View Parking Pass
 void viewPass(int index)
 {
@@ -984,7 +988,7 @@ void admin_page(int index)
 		switch(adminChoice){
 			case 1: view_stud(index); break;
 			case 2: view_app(index); app_validation(); break;
-			case 3: fullReport(); break; 
+			case 3: loading_screen(); clear_screen(); fullReport(); break; 
 			case 4: cout<<"\nReturn to Home Page...\n"; loading_screen(); clear_screen(); return;
 			default: limit_input(); cout<<"\nInvalid Option! Please Enter the Number 1-4."<<endl;
 		}
@@ -1130,7 +1134,7 @@ void app_validation()
 	
 	        if(reason == "Approved"){
 	            applications[appIndex].status = "Approved";
-	            cout << "Application APPROVED!" <<endl<<endl;
+	            cout << "\nApplication APPROVED!" <<endl<<endl;
 	            
 	            createPass(
 	                applications[appIndex].studentID,
@@ -1140,7 +1144,7 @@ void app_validation()
 	        }
 	        else{
 	            applications[appIndex].status = "Rejected";
-	            cout << "Rejected Reason: " << reason <<endl<<endl;
+	            cout << "\nRejected Reason: " << reason <<endl<<endl;
 	        }
 	        // save back to file
 	        ofstream file("applications.txt");
@@ -1276,70 +1280,113 @@ void createPass(string studentID, string startDate, int months)
     outFile.close();
 }
 
-// Generate Analytics
+// Analytics Report 
 void fullReport()
 {
-    cout<<"\n==================================================="<<endl;
-	cout<<"|          SUMMARY OF ANALYTICS REPORTS           |"<<endl;
-	cout<<"==================================================="<<endl;
-	averageRenewal();
-    total_app();
-    utilizationRate();
-    monthlyIncome();
-    growthRate();
-    cout<<"==================================================="<<endl<<endl;
+	int reportChoice;
+	
+	do{
+		cout<<"========= ANALYTICS REPORTS ========"<<endl;
+        cout<<"| 1. Total Applications            |"<<endl;
+        cout<<"| 2. Average Renewal per Faculty   |"<<endl;
+        cout<<"| 3. Car Park Utilization Rate     |"<<endl;
+        cout<<"| 4. Monthly Income per Year       |"<<endl;
+        cout<<"| 5. Growth Rate                   |"<<endl;
+        cout<<"| 6. Back to Admin Module          |"<<endl;
+        cout<<"===================================="<<endl;
+		
+		cout << "Enter your option : ";
+		cin >> reportChoice;
+		
+		switch(reportChoice){
+			case 1: total_app(); break;
+			case 2: averageRenewal(); break;
+			case 3: utilizationRate(); break;
+			case 4: monthlyIncome(); break;
+			case 5: growthRate(); break;
+			case 6: cout<<"\nReturn to Admin Module...\n"; loading_screen(); clear_screen(); return;
+			default: limit_input(); cout<<"\nInvalid Option! Please Enter the Number 1-6."<<endl;
+		}
+	}while(reportChoice != 6);
 }
 
-// Average Renewal
+// Average Renewal per Faculty
 void averageRenewal()
 {
-	/* Average Renewal = total number of applications / number of students who applied
+	// Average Renewal per Faculty = total applications in that faculty / total students in that faculty
+	cout<<"\n============================================"<<endl;
+	cout<<"|       Average Renewal per Faculty        |"<<endl;
+	cout<<"============================================"<<endl;
 	
-	   Exp:	Student A -> 2 applications
-			Student B -> 1 application
-			Student C -> 3 applications
-	
-	   		average = (2+1+3) / 3 = 2
-	*/
-		
-	if(applicationCount == 0){
-        cout << "No applications found.\n";
+	if(applicationCount == 0 || studentCount == 0){
+        cout<<"|          --No data available--           |"<<endl;
+        cout<<"============================================"<<endl;
         return;
     }
 
-    int totalApplications = 0;
-    int totalStudents = 0;
+    // store unique faculties
+    string faculties[100];
+    int facultyCount = 0;
 
+    // Step 1: collect unique faculty names
     for(int i = 0; i < studentCount; i++){
-        int count = 0;
+        bool exists = false;
 
-        for(int j = 0; j < applicationCount; j++){
-            if(applications[j].studentID == students[i].id){
-                count++;
+        for(int j = 0; j < facultyCount; j++){
+            if(faculties[j] == students[i].faculty){
+                exists = true;
+                break;
             }
         }
 
-        if(count > 0){
-            totalStudents++;
-            totalApplications += count;
+        if(!exists){
+            faculties[facultyCount++] = students[i].faculty;
         }
     }
 
-    double avgRenew = (double)totalApplications / totalStudents;
+    cout<<"| "<<left
+			<< setw(20) <<"Faculty"
+			<< setw(20) <<"Average Renewal" <<" |"<<endl;
+	cout<<"|------------------------------------------|"<<endl;
 
-    cout << "Average Renewal: " << fixed << setprecision(2) << avgRenew << endl;
+    // Step 2: calculate for each faculty
+    for(int i = 0; i < facultyCount; i++){
+        string currentFaculty = faculties[i];
+
+        int totalStudents = 0;
+        int totalApplications = 0;
+
+        for(int j = 0; j < studentCount; j++){
+            if(students[j].faculty == currentFaculty){
+                totalStudents++;
+
+                // count applications for this student
+                for(int k = 0; k < applicationCount; k++){
+                    if(applications[k].studentID == students[j].id){
+                        totalApplications++;
+                    }
+                }
+            }
+        }
+
+        double avg = 0;
+        if(totalStudents > 0){
+            avg = (double)totalApplications / totalStudents;
+        }
+        
+		cout<<"| " << left
+            << setw(20) << currentFaculty
+            << setw(20) << fixed << setprecision(2) << avg <<" |"<<endl;
+    }
+    cout<<"============================================"<<endl<<endl;
+    return;
 }
 
 // Total Applications
 void total_app()
 {
-	/*	Total Applications = total number of records in applications.txt (new + renew)
-	
-		Exp:	application.txt = 120 row
-				total = 120
-	*/
-		
-	cout << "Total Applications: " << applicationCount << endl;
+	cout << "\nTotal Applications: " << applicationCount <<endl<<endl;
+	return;
 }
 
 // Car Park Utilization Rate
@@ -1369,28 +1416,86 @@ void utilizationRate()
 
     double rate = (used / maxCapacity) * 100;
 
-    cout << "Utilization Rate: " << fixed << setprecision(2) << rate << "%" << endl;
+    cout << "\nUtilization Rate: " << fixed << setprecision(2) << rate << "%" <<endl<<endl;
+    return;
 }
 
-// Monthly Income
+// Monthly Income per Year 
 void monthlyIncome()
 {
-	/*	Monthly Income = total payment collected within a specific month
+	cout<<"\n==================================="<<endl;
+	cout<<"|     Monthly Income per Year     |"<<endl;
+	cout<<"==================================="<<endl;
 	
-		- Read payments.txt
-		- Filter by selected month
-		- Sum all payment amounts
-	*/
-		
-	double monthIncome = 0;
-	
-//	for(int i = 0; i < applicationCount; i++){
-//	    if(applications[i].status == "Approved"){
-//	        monthIncome += 50; // per pass
-//	    }
-//	}
+	if(applicationCount == 0){
+        cout<<"|      --No data available--      |"<<endl;
+        cout<<"==================================="<<endl;
+        return;
+    }
 
-    cout << "Monthly Income: RM " << monthIncome << endl;
+    // store unique years
+    int years[10];
+    int yearCount = 0;
+
+    // Step 1: collect unique years
+    for(int i = 0; i < applicationCount; i++){
+        string ym = applications[i].month;
+
+        int year = stringToInt(ym.substr(0,4));
+
+        bool exists = false;
+        for(int j = 0; j < yearCount; j++){
+            if(years[j] == year){
+                exists = true;
+                break;
+            }
+        }
+
+        if(!exists){
+            years[yearCount++] = year;
+        }
+    }
+    
+    cout<<"| "<<left
+		<< setw(8) <<"Year"
+		<< setw(8) <<"Month"
+		<< setw(15) <<"Income (RM)" <<" |"<<endl;
+	
+    // Step 2: calculate income per year & month
+    for(int y = 0; y < yearCount; y++){
+        int year = years[y];
+
+        double monthly[13] = {0}; // index 1¨C12
+
+        for(int i = 0; i < applicationCount; i++){
+            if(applications[i].status != "Approved") continue;
+
+            string ym = applications[i].month;
+
+            int appYear = stringToInt(ym.substr(0,4));
+            int appMonth = stringToInt(ym.substr(5,2));
+
+            if(appYear == year){
+                monthly[appMonth] += 50; // RM50 per pass
+            }
+        }
+        
+        for(int m = 1; m <= 12; m++){
+		
+		    if(m == 1){
+		    	cout<<"|---------------------------------|"<<endl;
+		        cout<<"| " << left << setw(8) << year;   // only first row show year
+		    } else {
+		        cout<<"| " << left << setw(8) << " ";    // others empty
+		    }
+		
+		    cout << setw(8) << (m < 10 ? "0" + intToString(m) : intToString(m))
+		         << setw(15) << fixed << setprecision(2) << monthly[m] 
+		         << " |"<<endl;
+		}
+    }
+    cout<<"==================================="<<endl<<endl;
+    return;
 }
 
 // Growth Rate
@@ -1422,21 +1527,15 @@ void growthRate()
     }
 
     if(previous == 0){
-        cout << "Growth Rate: N/A (no previous data)" << endl;
+        cout << "\nGrowth Rate: N/A (no previous data)" <<endl<<endl;
         return;
     }
 
     double growth = ((current - previous) / previous) * 100;
-
-    cout << "Growth Rate: " << fixed << setprecision(2) << growth << "%" << endl;
+    cout << "\nGrowth Rate: " << fixed << setprecision(2) << growth << "%" <<endl<<endl;
+    return;
 }
 
-
-
-//========================================Payment Part========================================
-void paymentModule(){
-	cout << "\n[PAYMENT MODULE - NOT IMPLEMENTED YET]\n";
-}
 
 //========================================Tracking Part========================================
 void trackingModule(){
