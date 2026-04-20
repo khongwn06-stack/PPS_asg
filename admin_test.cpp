@@ -1345,8 +1345,8 @@ void averageRenewal()
     }
 
     cout<<"| "<<left
-			<< setw(20) <<"Faculty"
-			<< setw(20) <<"Average Renewal" <<" |"<<endl;
+		<< setw(20) <<"Faculty"
+		<< setw(20) <<"Average Renewal" <<" |"<<endl;
 	cout<<"|------------------------------------------|"<<endl;
 
     // Step 2: calculate for each faculty
