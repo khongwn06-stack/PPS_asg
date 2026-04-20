@@ -1286,8 +1286,8 @@ void fullReport()
     cout<<"\n==================================================="<<endl;
 	cout<<"|          SUMMARY OF ANALYTICS REPORTS           |"<<endl;
 	cout<<"==================================================="<<endl;
-	averageRenewal();
     total_app();
+	averageRenewal();
     utilizationRate();
     monthlyIncome();
     growthRate();
@@ -1352,11 +1352,11 @@ void utilizationRate()
 	/*	Utilization Rate = total usage units / maximum parking capacity
 
 		Assumption:	- Each approved application represents 1 unit of usage
-					- Total capacity = parking slots × operating hours
+					- Total capacity = parking slots ?operating hours
 		
-		Exp:	1000 slots × 10.5 hours = 10500 total capacity units
+		Exp:	1000 slots ?10.5 hours = 10500 total capacity units
 				If 100 approved applications:
-					Utilization Rate = 100 / 10500 × 100%
+					Utilization Rate = 100 / 10500 ?100%
 	*/
 			
 	const int slots = 1000;
@@ -1400,7 +1400,7 @@ void monthlyIncome()
 // Growth Rate
 void growthRate()
 {
-	/*	Growth Rate = (current month income - previous month income) / previous month × 100%
+	/*	Growth Rate = (current month income - previous month income) / previous month ?100%
 	
 		Current implementation uses a simplified estimation:
 		- First half of records is treated as previous month
