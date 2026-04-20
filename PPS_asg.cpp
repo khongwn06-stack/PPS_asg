@@ -1134,7 +1134,7 @@ void app_validation()
 	
 	        if(reason == "Approved"){
 	            applications[appIndex].status = "Approved";
-	            cout << "Application APPROVED!" <<endl<<endl;
+	            cout << "\nApplication APPROVED!" <<endl<<endl;
 	            
 	            createPass(
 	                applications[appIndex].studentID,
@@ -1144,7 +1144,7 @@ void app_validation()
 	        }
 	        else{
 	            applications[appIndex].status = "Rejected";
-	            cout << "Rejected Reason: " << reason <<endl<<endl;
+	            cout << "\nRejected Reason: " << reason <<endl<<endl;
 	        }
 	        // save back to file
 	        ofstream file("applications.txt");
