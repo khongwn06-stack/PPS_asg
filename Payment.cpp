@@ -57,6 +57,8 @@ string choosePaymentMethod()
 {
     int opt;
 
+	while(true)
+	{
     cout << "\nSelect Payment Method:\n";
     cout << "1. TNG QR\n";
     cout << "2. DuitNow QR\n";
@@ -64,6 +66,14 @@ string choosePaymentMethod()
     cout << "4. International Card\n";
     cout << "Enter choice: ";
     cin >> opt;
+    
+    if(cin.fail())
+    {
+    	cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Invalid input! Please enter a number between 1-4.\n";
+        continue;	
+	}
 
     switch(opt)
     {
@@ -71,11 +81,13 @@ string choosePaymentMethod()
         case 2: return "DuitNow QR";
         case 3: return "Card";
         case 4: return "International Card";
-        default: return "Invalid";
+        default: cout << "Invalid method! Please try again.\n";
     }
+	}	
 }
 
-// MAIN PAYMENT MENU (called after login)
+
+// MAIN PAYMENT MENU (after login)
 void paymentMenu(int studentIndex)
 {
     string sid = students[studentIndex].id;
@@ -168,7 +180,7 @@ void paymentMenu(int studentIndex)
 
     payFile.close();
 
-    // ===== RECEIPT =====
+    // ============= RECEIPT ================
     cout << "\n====================================\n";
     cout << "|              RECEIPT             |\n";
     cout << "====================================\n";
