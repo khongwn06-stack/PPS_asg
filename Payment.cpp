@@ -4,6 +4,12 @@
 using namespace std;
 
 
+const string STATUS_PENDING  = "Pending";
+const string STATUS_APPROVED = "Approved";
+const string STATUS_REJECTED = "Rejected";
+const string STATUS_PAID     = "Paid";
+
+
 //========================================Payment Part========================================
 void paymentModule();
 void paymentMenu(int studentIndex);
@@ -21,31 +27,21 @@ string generatePaymentID()
     return "PID" + intToString(1000 + count++);
 }
 
-
 // Get current date & time
 string getCurrentDateTime()
 {
     time_t now = time(0);
     tm *ltm = localtime(&now);
 
-    int year  = 1900 + ltm->tm_year;
-    int month = 1 + ltm->tm_mon;
-    int day   = ltm->tm_mday;
-
-    int hour = ltm->tm_hour;
-    int min  = ltm->tm_min;
-
     stringstream ss;
-
-    ss << year << "-"
-       << (month < 10 ? "0" : "") << month << "-"
-       << (day < 10 ? "0" : "") << day << " "
-       << (hour < 10 ? "0" : "") << hour << ":"
-       << (min < 10 ? "0" : "") << min;
+    ss << (1900 + ltm->tm_year) << "-"
+       << (1 + ltm->tm_mon) << "-"
+       << ltm->tm_mday << " "
+       << ltm->tm_hour << ":"
+       << ltm->tm_min;
 
     return ss.str();
 }
-
 
 // Check if student has APPROVED application
 bool checkApproval(string studentID)
@@ -62,22 +58,20 @@ bool checkApproval(string studentID)
     return false;
 }
 
-
-// Choose payment method
+// Payment Choice
 string choosePaymentMethod()
 {
     int opt;
 
-    cout << "\n========================================\n";
-    cout << "|        SELECT PAYMENT METHOD         |\n";
-    cout << "========================================\n";
-    cout << "| 1. TNG QR                           |\n";
-    cout << "| 2. DuitNow QR                       |\n";
-    cout << "| 3. Credit/Debit Card                |\n";
-    cout << "| 4. International Card               |\n";
-    cout << "========================================\n";
-    cout << "Enter choice: ";
-    cin >> opt;
+        cout<<"---------- Payment Choice ----------"<<endl;
+        cout<<"| 1. TNG QR                        |"<<endl;
+        cout<<"| 2. DuitNow QR                    |"<<endl;
+        cout<<"| 3. Credit / Debit Card           |"<<endl;
+        cout<<"| 4. International Card            |"<<endl;
+        cout<<"------------------------------------"<<endl;
+        
+        cout << "Enter choice: ";
+        cin >> opt;
 
     switch(opt)
     {
@@ -85,12 +79,11 @@ string choosePaymentMethod()
         case 2: return "DuitNow QR";
         case 3: return "Card";
         case 4: return "International Card";
-        default: return "Invalid Method! Please choose the payment method between 1-4";
+        default: return "Invalid Method! Please choose the payment method between 1-4.";
     }
 }
 
-
-// MAIN PAYMENT MENU (after login)
+// Payment Menu
 void paymentMenu(int studentIndex)
 {
     string sid = students[studentIndex].id;
@@ -117,7 +110,7 @@ void paymentMenu(int studentIndex)
             // ===== CASE 1: PENDING =====
             if(applications[i].status == STATUS_PENDING)
             {
-                cout << "? Your application is still processing.\n";
+                cout << "Your application is still processing.\n";
                 cout << "Please wait 3–5 working days.\n";
                 return;
             }
@@ -125,7 +118,7 @@ void paymentMenu(int studentIndex)
             // ===== CASE 2: REJECTED =====
             if(applications[i].status == STATUS_REJECTED)
             {
-                cout << "? Your application was rejected.\n";
+                cout << "Your application was rejected.\n";
                 return;
             }
 
@@ -135,7 +128,7 @@ void paymentMenu(int studentIndex)
             {
                 string month;
 
-                // ===== INPUT MONTH (VALIDATION LOOP) =====
+                // ===== INPUT MONTH =====
                 while(true)
                 {
                     cout << "\nEnter the month you request for pass (YYYY-MM or 0 to cancel): ";
@@ -153,10 +146,10 @@ void paymentMenu(int studentIndex)
                         }
                     }
 
-                    cout << "? Invalid month format! Try again.\n";
+                    cout << "Invalid month format! Try again.\n";
                 }
 
-                // ===== PAYMENT METHOD LOOP =====
+                // ===== PAYMENT METHOD =====
                 string method;
                 while(true)
                 {
@@ -165,7 +158,7 @@ void paymentMenu(int studentIndex)
                     if(method != "Invalid")
                         break;
 
-                    cout << "? Invalid method! Please choose again.\n";
+                    cout << "Invalid method! Please choose again.\n";
                 }
 
                 // ===== PAYMENT PROCESS =====
@@ -174,6 +167,17 @@ void paymentMenu(int studentIndex)
                 string dateTime = getCurrentDateTime();
 
                 applications[i].payment = STATUS_PAID;
+                
+                
+                // ===== DAILY COMPARISON (6–9 HOURS) =====
+                int minH = 6, maxH = 9;
+
+                double minDaily = minH * 0.5 * 30;
+                double maxDaily = maxH * 0.5 * 30;
+
+                double minSave = minDaily - amount;
+                double maxSave = maxDaily - amount;
+
 
                 // ===== SAVE APPLICATION =====
                 ofstream file("applications.txt");
@@ -199,18 +203,43 @@ void paymentMenu(int studentIndex)
                         << dateTime << endl;
 
                 payFile.close();
+                
+                // Header 
+    			/*if(isFileEmpty())
+    			{
+        		file << "No | PID | SID | Type | Hours | Months | Amount | Method | DateTime\n";
+        		file << "--------------------------------------------------------------------------\n";
+    			}
+
+    			file << no << " | "
+         		<< pid << " | "
+         		<< studentID << " | "
+         		<< "MONTHLY" << " | "
+         		<< hours << " | "
+         		<< months << " | "
+         		<< amount << " | "
+         		<< method << " | "
+         		<< datetime;
+
+    			file.close();
+				}*/
+
 
                 // ===== RECEIPT =====
-                cout << "\n========================================\n";
-                cout << "|              RECEIPT                |\n";
-                cout << "========================================\n";
-                cout << "| Payment ID   : " << pid << endl;
-                cout << "| Student ID   : " << sid << endl;
-                cout << "| Month        : " << month << endl;
-                cout << "| Amount Paid  : RM" << amount << endl;
-                cout << "| Method       : " << method << endl;
-                cout << "| Date & Time  : " << dateTime << endl;
-                cout << "========================================\n";
+                cout<<"\n================================================="<<endl;
+                cout<<"|                     RECEIPT                   |"<< endl;
+                cout<<"================================================="<<endl;
+                cout<<"| Payment ID   : " << left << setw(15) << pid << "|" << endl;
+	            cout<<"| Student ID   : " << left << setw(15) << sid << "|" << endl;
+	            cout<<"| Months       : " << left << setw(15) << month << "|" << endl;
+	            cout<<"| Amount Paid  : RM " << left << setw(10) << amount << "|" << endl;
+	            cout<<"| Method       : " << left << setw(15) << method << "|" << endl;
+	            cout<<"| Date & Time  : " << left << setw(15) << dateTime << "|" << endl;
+                cout<<"|" << setw(30) << "|" << endl;
+                cout<<"|--------------- Cost Comparison ---------------|" <<endl;
+                cout<<"| Daily (6 to 9 hours): RM" << minDaily << " - RM" << maxDaily << endl;
+                cout<<"| You saved           : RM" << minSave << " - RM" << maxSave << endl;
+                cout<<"================================================="<<endl;
 
                 return;
             }
@@ -218,7 +247,7 @@ void paymentMenu(int studentIndex)
             // ===== CASE 4: ALREADY PAID =====
             if(applications[i].payment == STATUS_PAID)
             {
-                cout << "? Payment already completed.\n";
+                cout << "Payment already completed.\n";
                 return;
             }
         }
@@ -230,3 +259,4 @@ void paymentMenu(int studentIndex)
         cout << "========================================\n";
     }
 }
+
