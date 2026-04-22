@@ -770,9 +770,9 @@ void submitApplication(int index)
     Application a;
     a.appID = generateApplicationID();
     a.studentID = students[index].id;
-    a.status = "Pending";
+    a.status = STATUS_PENDING;
     a.month = month;
-    a.payment = "Unpaid";
+    a.payment = STATUS_PAID;
 
     applications[applicationCount++] = a;
 
@@ -911,8 +911,8 @@ void renewApplication(int index)
     }
 
     applications[realIndex].month = month;
-    applications[realIndex].status = "Pending";
-    applications[realIndex].payment = "Unpaid";
+    applications[realIndex].status = STATUS_APPROVED;
+    applications[realIndex].payment = STATUS_PAID;
 
     ofstream file("applications.txt");
 
@@ -1007,8 +1007,8 @@ bool checkApproval(string studentID)
 {
     for(int i = 0; i < applicationCount; i++){
         if(applications[i].studentID == studentID &&
-           applications[i].status == "Approved" &&
-           applications[i].payment == "Unpaid"){
+           applications[i].status == STATUS_APPROVED &&
+           applications[i].payment == STATUS_PAID){
             return true;
         }
     }
