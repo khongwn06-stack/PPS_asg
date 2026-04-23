@@ -1012,7 +1012,7 @@ void paymentMenu(int studentIndex)
             if(applications[i].status == STATUS_PENDING){
                 
 				cout << "Your application is still processing.\n";
-                cout << "Please wait 3–5 working days.\n";
+                cout << "Please wait 3? working days.\n";
                 return;
             }
 
@@ -1079,7 +1079,7 @@ void paymentMenu(int studentIndex)
 				}
 				passFile.close();
                 
-                // ===== DAILY COMPARISON (8–10 HOURS) =====
+                // ===== DAILY COMPARISON (8?0 HOURS) =====
                 int minH = 8, maxH = 10;
 
                 double minDaily = minH * 0.5 * 30;
@@ -1797,7 +1797,7 @@ void monthlyIncome()
     for(int y = 0; y < yearCount; y++){
         int year = years[y];
 
-        double monthly[13] = {0}; // index 1–12
+        double monthly[13] = {0}; // index 1?2
 
         for(int i = 0; i < applicationCount; i++){
             if(applications[i].status != STATUS_APPROVED) continue;
@@ -1817,7 +1817,7 @@ void monthlyIncome()
 		    if(m == 1){
 		    	cout<<"|---------------------------------|"<<endl;
 		        cout<<"| " << left << setw(8) << year;   // only first row show year
-		    } else {
+		    } else {? 
 		        cout<<"| " << left << setw(8) << " ";    // others empty
 		    }
 		
