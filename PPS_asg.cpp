@@ -1817,7 +1817,8 @@ void monthlyIncome()
 		    if(m == 1){
 		    	cout<<"|---------------------------------|"<<endl;
 		        cout<<"| " << left << setw(8) << year;   // only first row show year
-		    } else {? 
+		    } else 
+			{
 		        cout<<"| " << left << setw(8) << " ";    // others empty
 		    }
 		
