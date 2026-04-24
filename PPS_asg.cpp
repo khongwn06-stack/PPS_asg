@@ -228,7 +228,6 @@ void passUsageRate();
 void monthlyIncome();
 
 
-
 // Addition ========================================
 //limited output after enter Alphabet
 void limit_input(){
@@ -1924,7 +1923,7 @@ void app_validation()
 	            applications[appIndex].appID
         	);
 	
-	        if(reason == "Approved"){
+	        if(reason == STATUS_APPROVED){
 	            applications[appIndex].status = STATUS_APPROVED;
 	            cout << "\nApplication APPROVED!" <<endl<<endl;
 	            
@@ -1975,51 +1974,64 @@ void approve_app(string targetAppID)
 // Validate application for checking details
 string validate_app(string studentID, string appID)
 {
-    // Check student exists in students.txt
-    ifstream stuFile("students.txt");
-    if(!stuFile) return "Student file missing";
+	int activePass = 0;
 
-    bool studentFound = false;
-    string line;
-
-    while(getline(stuFile, line)){
-        stringstream ss(line);
-        string name, id, faculty, phone, vehicle, password;
-
-        getline(ss, name, ',');
-        getline(ss, id, ',');
-        getline(ss, faculty, ',');
-        getline(ss, phone, ',');
-        getline(ss, vehicle, ',');
-        getline(ss, password, ',');
-
-        if(id == studentID){
-            studentFound = true;
-
-            // basic completeness check
-            if(name.empty() || faculty.empty() || phone.empty() || vehicle.empty()){
-                return "Incomplete student details";
-            }
-            break;
-        }
-    }
-    stuFile.close();
-
-    if(!studentFound){
-        return "Student ID not found";
-    }
-
-    // Check application exists + valid data
-    int appIndex = findApp_Index(appID);
-    if(appIndex == -1){
-        return "Application not found";
-    }
-
-    if(applications[appIndex].month.empty()){
-        return "Incomplete application month";
-    }
-
-    return STATUS_APPROVED;
+	for(int i = 0; i < passCount; i++){
+	    if(passes[i].status == STATUS_ACTIVE){
+	        activePass++;
+	    }
+	}
+	if(activePass >= SLOTS){
+    	return "Parking slots are full";
+	}
+	
+	else{
+		// Check student exists in students.txt
+	    ifstream stuFile("students.txt");
+	    if(!stuFile) return "Student file missing";
+	
+	    bool studentFound = false;
+	    string line;
+	
+	    while(getline(stuFile, line)){
+	        stringstream ss(line);
+	        string name, id, faculty, phone, vehicle, password;
+	
+	        getline(ss, name, ',');
+	        getline(ss, id, ',');
+	        getline(ss, faculty, ',');
+	        getline(ss, phone, ',');
+	        getline(ss, vehicle, ',');
+	        getline(ss, password, ',');
+	
+	        if(id == studentID){
+	            studentFound = true;
+	
+	            // basic completeness check
+	            if(name.empty() || faculty.empty() || phone.empty() || vehicle.empty()){
+	                return "Incomplete student details";
+	            }
+	            break;
+	        }
+	    }
+	    stuFile.close();
+	
+	    if(!studentFound){
+	        return "Student ID not found";
+	    }
+	
+	    // Check application exists + valid data
+	    int appIndex = findApp_Index(appID);
+	    if(appIndex == -1){
+	        return "Application not found";
+	    }
+	
+	    if(applications[appIndex].month.empty()){
+	        return "Incomplete application month";
+	    }
+	
+	    return STATUS_APPROVED;
+	}
 }
 
 // Generate Pass ID
