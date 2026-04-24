@@ -9,6 +9,7 @@
 #include <string>  //required for the string type used with getline()
 
 #define PRICE 80  //one month parking pass price
+#define SLOTS 1100  //assume system capacity = 1100 parking slots
 
 using namespace std;
 
@@ -101,11 +102,10 @@ void createPass(string studentID, string startDate, int months);
 
 // Generate Analytics
 void fullReport();
-void averageRenewal();
+void averageApply();
 void total_app();
-void utilizationRate();
+void passUsageRate();
 void monthlyIncome();
-void growthRate();
 
 
 //========================================Tracking Part========================================
@@ -1012,7 +1012,7 @@ void paymentMenu(int studentIndex)
             if(applications[i].status == STATUS_PENDING){
                 
 				cout << "Your application is still processing.\n";
-                cout << "Please wait 3? working days.\n";
+                cout << "Please wait 3–5 working days.\n";
                 return;
             }
 
@@ -1079,7 +1079,7 @@ void paymentMenu(int studentIndex)
 				}
 				passFile.close();
                 
-                // ===== DAILY COMPARISON (8?0 HOURS) =====
+                // ===== DAILY COMPARISON (8–10 HOURS) =====
                 int minH = 8, maxH = 10;
 
                 double minDaily = minH * 0.5 * 30;
@@ -1251,7 +1251,7 @@ void admin_login()
 		//If file doesn't exist, create default admin
 		if(!file){
 		    ofstream newFile("admin.txt");
-		    newFile<<"A001|admin|1234\n";
+		    newFile<<"A001,admin,1234\n";
 		    newFile.close();
 		    
 		    file.open("admin.txt");
@@ -1263,9 +1263,9 @@ void admin_login()
 		    stringstream ss(line);
 		    string id, username, password;
 
-		    getline(ss, id, '|');
-		    getline(ss, username, '|');
-		    getline(ss, password, '|');
+		    getline(ss, id, ',');
+		    getline(ss, username, ',');
+		    getline(ss, password, ',');
 		
 		    if(adminID == id && adminPassword == password){
 		        loginSuccess = true;
@@ -1622,36 +1622,34 @@ void fullReport()
 	int reportChoice;
 	
 	do{
-		cout<<"========= ANALYTICS REPORTS ========"<<endl;
-        cout<<"| 1. Total Applications            |"<<endl;
-        cout<<"| 2. Average Renewal per Faculty   |"<<endl;
-        cout<<"| 3. Car Park Utilization Rate     |"<<endl;
-        cout<<"| 4. Monthly Income per Year       |"<<endl;
-        cout<<"| 5. Growth Rate                   |"<<endl;
-        cout<<"| 6. Back to Admin Module          |"<<endl;
-        cout<<"===================================="<<endl;
+		cout<<"============== ANALYTICS REPORTS ==============="<<endl;
+        cout<<"| 1. Total Applications                        |"<<endl;
+        cout<<"| 2. Average Appl per Student (by Faculty)     |"<<endl;
+        cout<<"| 3. Parking Pass Usage Rate                   |"<<endl;
+        cout<<"| 4. Monthly Income per Year                   |"<<endl;
+        cout<<"| 5. Back to Admin Module                      |"<<endl;
+        cout<<"================================================"<<endl;
 		
 		cout << "Enter your option : ";
 		cin >> reportChoice;
 		
 		switch(reportChoice){
 			case 1: total_app(); break;
-			case 2: averageRenewal(); break;
-			case 3: utilizationRate(); break;
+			case 2: averageApply(); break;
+			case 3: passUsageRate(); break;
 			case 4: monthlyIncome(); break;
-			case 5: growthRate(); break;
-			case 6: cout<<"\nReturn to Admin Module...\n"; loading_screen(); clear_screen(); return;
-			default: limit_input(); cout<<"\nInvalid Option! Please Enter the Number 1-6."<<endl;
+			case 5: cout<<"\nReturn to Admin Module...\n"; loading_screen(); clear_screen(); return;
+			default: limit_input(); cout<<"\nInvalid Option! Please Enter the Number 1-5."<<endl;
 		}
-	}while(reportChoice != 6);
+	}while(reportChoice != 5);
 }
 
-// Average Renewal per Faculty
-void averageRenewal()
+// Average Apply per Student (by Faculty)
+void averageApply()
 {
-	// Average Renewal per Faculty = total applications in that faculty / total students in that faculty
+	// Average Apply per Student (by Faculty) = total applications in that faculty / total students in that faculty
 	cout<<"\n============================================"<<endl;
-	cout<<"|       Average Renewal per Faculty        |"<<endl;
+	cout<<"|     Average Applications per Student     |"<<endl;
 	cout<<"============================================"<<endl;
 	
 	if(applicationCount == 0 || studentCount == 0){
@@ -1682,7 +1680,7 @@ void averageRenewal()
 
     cout<<"| "<<left
 		<< setw(20) <<"Faculty"
-		<< setw(20) <<"Average Renewal" <<" |"<<endl;
+		<< setw(20) <<"Average Apply" <<" |"<<endl;
 	cout<<"|------------------------------------------|"<<endl;
 
     // Step 2: calculate for each faculty
@@ -1725,11 +1723,11 @@ void total_app()
 	return;
 }
 
-// Car Park Utilization Rate
-void utilizationRate()
+// Parking Pass Usage Rate
+void passUsageRate()
 {
-	// Car Park Utilization Rate = (Number of Active Parking Pass / Total Parking Slots) x 100%
-	const int totalSlots = 1000;
+	// Parking Pass Usage Rate = (Number of Active Parking Pass / Total Parking Slots) x 100%
+	const int totalSlots = SLOTS;
     int activePass = 0;
 
     for(int i = 0; i < passCount; i++){
@@ -1738,15 +1736,19 @@ void utilizationRate()
         }
     }
     
-    // Since activePass is NOT hours, this is simplified interpretation
+    if(activePass > totalSlots) activePass = totalSlots;
     double rate = (double)activePass / totalSlots * 100;
+    
+    ostringstream ss;
+	ss << fixed << setprecision(2) << rate;
+	string rateStr = ss.str();
 
 	cout<<"\n============================================="<<endl;
-	cout<<"|         Car Park Utilization Rate         |"<<endl;
+	cout<<"|        Parking Pass Utilization Rate        |"<<endl;
 	cout<<"============================================="<<endl;
     cout<<"| Active Parking Pass : " << activePass << string(20 - intToString(activePass).length(), ' ') << "|" << endl;
 	cout<<"| Total Parking Slots : " << totalSlots << string(20 - intToString(totalSlots).length(), ' ') << "|" << endl;
-	cout<<"| Utilization Rate    : " << fixed << setprecision(2) << rate << "%" << string(16 - intToString((int)rate).length(), ' ') << "|" << endl;    
+	cout<<"| Usage Rate          : " << fixed << rateStr << "%" << string(16 - rateStr.length(), ' ') << "|" << endl;    
 	cout<<"============================================="<<endl<<endl;
     return;
 }
@@ -1797,19 +1799,17 @@ void monthlyIncome()
     for(int y = 0; y < yearCount; y++){
         int year = years[y];
 
-        double monthly[13] = {0}; // index 1?2
+        double monthly[13] = {0}; // index 1–12
 
         for(int i = 0; i < applicationCount; i++){
-            if(applications[i].status != STATUS_APPROVED) continue;
-
-            string ym = applications[i].month;
-
-            int appYear = stringToInt(ym.substr(0,4));
-            int appMonth = stringToInt(ym.substr(5,2));
-
-            if(appYear == year){
-                monthly[appMonth] += PRICE; // RM80 per pass
-            }
+            if(applications[i].status == STATUS_APPROVED && applications[i].payment == STATUS_PAID){
+			    int yr, mn;
+			    if(parseAppMonth(applications[i].month, yr, mn)){
+			        if(yr == year){
+			            monthly[mn] += PRICE;
+			        }
+			    }
+			}
         }
         
         for(int m = 1; m <= 12; m++){
@@ -1817,8 +1817,8 @@ void monthlyIncome()
 		    if(m == 1){
 		    	cout<<"|---------------------------------|"<<endl;
 		        cout<<"| " << left << setw(8) << year;   // only first row show year
-		    } else 
-			{
+		    } 
+			else{
 		        cout<<"| " << left << setw(8) << " ";    // others empty
 		    }
 		
@@ -1831,87 +1831,6 @@ void monthlyIncome()
     return;
 }
 
-// Growth Rate
-void growthRate()
-{
-	// Growth Rate (%) = ((Current Month Income - Previous Month Income) / Previous Month Income) ?100
-	cout<<"\n============================================="<<endl;
-    cout<<"|                Growth Rate                |"<<endl;
-    cout<<"============================================="<<endl;
-
-    if(applicationCount == 0){
-        cout<<"|           --No data available--           |"<<endl;
-        cout<<"============================================="<<endl;
-        return;
-    }
-
-    // Step 1: Find the different month
-    string months[400];
-    int monthCount = 0;
-
-    for(int i = 0; i < applicationCount; i++){
-        bool exists = false;
-
-        for(int j = 0; j < monthCount; j++){
-            if(months[j] == applications[i].month){
-                exists = true;
-                break;
-            }
-        }
-
-        if(!exists){
-            months[monthCount++] = applications[i].month;
-        }
-    }
-
-    // Step 2: at least 2 month
-    if(monthCount < 2){
-        cout<<"|    --Not enough months for comparison--   |"<<endl;
-        cout<<"============================================="<<endl;
-        return;
-    }
-
-    // Step 3: month (YYYY-MM)
-    for(int i = 0; i < monthCount - 1; i++){
-        for(int j = i + 1; j < monthCount; j++){
-            if(months[i] > months[j]){
-                swap(months[i], months[j]);
-            }
-        }
-    }
-
-    string prevMonth = months[monthCount - 2];
-    string latestMonth = months[monthCount - 1];
-
-    double previous = 0;
-    double current = 0;
-
-    // Step 4: calculate income
-    for(int i = 0; i < applicationCount; i++){
-        if(applications[i].status != STATUS_APPROVED) continue;
-
-        if(applications[i].month == latestMonth){
-            current += 50;
-        }
-        else if(applications[i].month == prevMonth){
-            previous += 50;
-        }
-    }
-
-    // Step 5: calculate growth rate
-    if(previous == 0){
-        cout<<"Previous month income is 0, cannot calculate.\n";
-        return;
-    }
-
-    double growth = ((current - previous) / previous) * 100;
-
-    cout<<"| Previous Month (" << prevMonth << ") Income : RM" << previous << string(15 - intToString(previous).length(), ' ') << "|" << endl;
-    cout<<"| Current Month (" << latestMonth << ") Income : RM" << current << string(15 - intToString(current).length(), ' ') << "|" << endl;
-    cout<<"| Growth Rate : " << fixed << setprecision(2) << growth << "%" << string(15 - intToString(growth).length(), ' ') << "|" << endl;
-    cout<<"============================================="<<endl<<endl;
-    return;
-}
 
 
 //===========================================================Tracking Part===========================================================
