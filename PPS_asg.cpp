@@ -781,7 +781,7 @@ void renewApplication(int index)
     int choice;
 
     while(true){
-        cout << "\nSelect index (press -1 to cancel): ";
+        cout << "Select index (press -1 to cancel): ";
 
         string input;
         getline(cin, input);
@@ -875,7 +875,7 @@ void renewApplication(int index)
              << applications[i].payment << endl;
     }
     file.close();
-    cout << "\nRENEW SUCCESSFUL!\n";
+    cout << "RENEW SUCCESSFUL!\n\n";
 }
 
 // Generate Application ID
@@ -1299,7 +1299,7 @@ void paymentMenu(int studentIndex)
 				}
 				passFile.close();
                 
-                // ===== DAILY COMPARISON (8?0 HOURS) =====
+                // ===== DAILY COMPARISON (8–10 HOURS) =====
                 int minH = 8, maxH = 10;
 
                 double minDaily = minH * 0.5 * 30;
@@ -1763,7 +1763,7 @@ void admin_page(int index)
 		
 		switch(adminChoice){
 			case 1: view_stud(index); break;
-			case 2: view_app(index); app_validation(); break;
+			case 2: view_app(index); break;
 			case 3: loading_screen(); clear_screen(); fullReport(); break; 
 			case 4: cout<<"\nReturn to Home Page...\n"; loading_screen(); clear_screen(); return;
 			default: limit_input(); cout<<"\nInvalid Option! Please Enter the Number 1-4."<<endl;
@@ -1782,7 +1782,7 @@ void view_stud(int index)
 	
 	if(!in_file){
 		cout<<"|                                     --ERROR FILE FOUND!--                                       |"<<endl;
-    	cout<<"==================================================================================================="<<endl;
+    	cout<<"===================================================================================================\n"<<endl;
 	}
 	
 	else{
@@ -1824,7 +1824,8 @@ void view_app(int index)
 	
 	if(applicationCount == 0){
 		cout<<"|                        --ERROR FILE FOUND!--                      |"<<endl;
-    	cout<<"====================================================================="<<endl;
+    	cout<<"=====================================================================\n"<<endl;
+    	return;
 	}
 	
 	else{	
@@ -1858,6 +1859,7 @@ void view_app(int index)
 	            << setw(10) << applications[i].payment <<" |\n";
 		}
 		cout<<"====================================================================="<<endl;
+		app_validation();
 	}
 }
 
@@ -2114,7 +2116,7 @@ void averageApply()
 	
 	if(applicationCount == 0 || studentCount == 0){
         cout<<"|          --No data available--           |"<<endl;
-        cout<<"============================================"<<endl;
+        cout<<"============================================\n"<<endl;
         return;
     }
 
@@ -2204,11 +2206,11 @@ void passUsageRate()
 	string rateStr = ss.str();
 
 	cout<<"\n============================================="<<endl;
-	cout<<"|        Parking Pass Utilization Rate        |"<<endl;
+	cout<<"|       Parking Pass Utilization Rate       |"<<endl;
 	cout<<"============================================="<<endl;
     cout<<"| Active Parking Pass : " << activePass << string(20 - intToString(activePass).length(), ' ') << "|" << endl;
 	cout<<"| Total Parking Slots : " << totalSlots << string(20 - intToString(totalSlots).length(), ' ') << "|" << endl;
-	cout<<"| Usage Rate          : " << fixed << rateStr << "%" << string(16 - rateStr.length(), ' ') << "|" << endl;    
+	cout<<"| Usage Rate          : " << fixed << rateStr << "%" << string(19 - rateStr.length(), ' ') << "|" << endl;    
 	cout<<"============================================="<<endl<<endl;
     return;
 }
@@ -2223,7 +2225,7 @@ void monthlyIncome()
 	
 	if(applicationCount == 0){
         cout<<"|      --No data available--      |"<<endl;
-        cout<<"==================================="<<endl;
+        cout<<"===================================\n"<<endl;
         return;
     }
 
@@ -2259,7 +2261,7 @@ void monthlyIncome()
     for(int y = 0; y < yearCount; y++){
         int year = years[y];
 
-        double monthly[13] = {0}; // index 1?2
+        double monthly[13] = {0}; // index 1–12
 
         for(int i = 0; i < applicationCount; i++){
             if(applications[i].status == STATUS_APPROVED && applications[i].payment == STATUS_PAID){
