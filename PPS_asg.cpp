@@ -508,7 +508,7 @@ void successLoginS(int index)
     cout<<"================================================"<<endl;
 	cout<<"|               STUDENT DETAILS                |"<<endl;
 	cout<<"================================================"<<endl;
-	cout<<"| Name         : "<< students[index].name << string(30-students[index].name.length(), ' ') <<"|"<<endl;
+	cout<<"| Student Name : "<< students[index].name << string(30-students[index].name.length(), ' ') <<"|"<<endl;
 	cout<<"| Student ID   : "<< students[index].id << string(30-students[index].id.length(), ' ') <<"|"<<endl;
 	cout<<"| Faculty      : "<< students[index].faculty << string(30-students[index].faculty.length(), ' ') <<"|"<<endl;
 	cout<<"| Phone Number : "<< students[index].phone << string(30-students[index].phone.length(), ' ') <<"|"<<endl;
