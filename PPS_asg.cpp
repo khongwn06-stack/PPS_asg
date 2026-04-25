@@ -33,7 +33,8 @@ struct Pass
     string passID, studentID, startDate, endDate, status;
 };
 
-struct PaymentReceipt {
+struct PaymentReceipt
+{
     string pid, sid, month;
     double amount;
     string method, date, time;
@@ -202,7 +203,6 @@ void billingMenu(int studentIndex);
 void myBilling(int studentIndex); 
 void processPayment(int studentIndex, int appIndex); 
 void paymentHistory(int studentIndex); 
-
 void printReceiptByApp(string targetAppID, string targetStudentID);
 string paymentMethod(int appIndex, int studentIndex); 
 string generatePaymentID(); 
