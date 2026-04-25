@@ -33,6 +33,12 @@ struct Pass
     string passID, studentID, startDate, endDate, status;
 };
 
+struct PaymentReceipt {
+    string pid, sid, month;
+    double amount;
+    string method, date, time;
+};
+
 // Global arrays to store, loaded from txt.file
 Student students[400];
 Application applications[400];
@@ -180,6 +186,7 @@ void updateStudentDetails(int studentIndex);
 void applyRenewPass(int index);
 void submitApplication(int studentIndex);
 void renewApplication(int studentIndex); 
+void showPriceComparison();
 string generateApplicationID();
 bool isWithinThreeMonths(string month); 
 
@@ -191,12 +198,14 @@ bool checkRenewalAlert(int studentIndex);
 void viewSpendingAnalysis(int studentIndex);
 
 // Billing
-void billMenu(int studentIndex);
-void paymentMenu(int studentIndex);
-bool checkApproval(string studentID);
-string generatePaymentID();
-string getCurrentDateTime();
-string choosePaymentMethod();
+void billingMenu(int studentIndex); 
+void myBilling(int studentIndex); 
+void processPayment(int studentIndex, int appIndex); 
+void paymentHistory(int studentIndex); 
+
+string paymentMethod(int appIndex, int studentIndex); 
+string generatePaymentID(); 
+string getCurrentTime();
 
 // View Transaction
 void transMenu(int studentIndex);
@@ -492,6 +501,7 @@ void loginStudent()
             cout << "\nERROR: Student ID not found!\n";
         }
     }
+
     loading_screen(); 
     clear_screen();
     studentMenu(index, index); 
@@ -539,7 +549,7 @@ void studentMenu(int index, int studentIndex)
         	case 1: updateStudentDetails(index); break;
             case 2: loading_screen(); clear_screen(); applyRenewPass(index); break;
             case 3: loading_screen(); clear_screen(); passDetails(index, studentIndex); break;
-            case 4: billMenu(studentIndex); break;
+            case 4: loading_screen(); clear_screen(); billingMenu(studentIndex); break;
             case 5: loading_screen(); clear_screen(); transMenu(studentIndex); break;
             case 6: cout<<"\nReturn to Home Page...\n"; loading_screen(); clear_screen(); return;
             default:limit_input(); cout<<"\nInvalid Option! Please Enter the Number 1-6."<<endl; 
@@ -625,6 +635,7 @@ void updateStudentDetails(int index)
 // Apply New / Renew Parking Pass Menu
 void applyRenewPass(int index)
 {
+	showPriceComparison();
 	int aRpassChoice;
 	
 	do{
@@ -715,8 +726,25 @@ void submitApplication(int index)
             continue;
         }
         break;
-    }
+	}
 
+	int confirm;
+	do{
+        cout<<"\n------Confirm Apply?------"<<endl;
+		cout<<"| 1. Confirm             |"<<endl;
+		cout<<"| 0. Cancel              |"<<endl;
+		cout<<"--------------------------"<<endl;
+	
+		cout<<"Select an option: ";
+		cin>>confirm;
+
+        switch(confirm){
+        	case 1: continue;
+            case 0: cout<<"Application cancelled.\n"; return;
+            default:limit_input(); cout<<"\nInvalid Option! Please Enter the Number 1 or 0."<<endl; 
+        }
+    }while(confirm != 1 || confirm !=0);
+	
     Application a;
     a.appID = generateApplicationID();
     a.studentID = students[index].id;
@@ -733,6 +761,34 @@ void submitApplication(int index)
 
     cout<<"\nAPPLICATION SUCCESSFUL!"<<endl;
     cout<<"Your Application ID : "<< a.appID <<endl<<endl;
+}
+
+// View Price Comparison
+void showPriceComparison()
+{
+    //const double hourlyRate = 0.50;
+    double hourlyRate = 0.50;
+    double hoursPerDay = 10.5; //8.00am to 6.30pm (10.5 hours)
+    double dailyCost = hoursPerDay * hourlyRate;
+    
+    double monthlyDaily = dailyCost * 30;
+    double saveMonth = monthlyDaily - PRICE;
+
+	// PRICE COMPARISON TABLE 
+    cout<<"================================================="<<endl;
+    cout<<"|           PARKING COST COMPARISON             |"<<endl;
+    cout<<"================================================="<<endl;
+    cout<<"| Charge Time  : 8:00 AM - 6:30 PM              |"<<endl;
+    cout<<"| Rate per hour: RM " << fixed << setprecision(2) << hourlyRate << setw(25) << " |" <<endl;
+    cout<<"| Approx / Day : RM " << fixed << setprecision(2) << dailyCost << setw(25) << " |" <<endl;
+    cout<<"================================================="<<endl;
+    cout<<"|           -- Original Payment --              |"<<endl;
+    cout<<"| One Month (30 days)         : RM " << monthlyDaily << setw(8) << " |" << endl;
+    cout<<"|-----------------------------------------------|"<<endl;
+    cout<<"|         -- Monthly Parking Pass --            |" << endl;
+    cout<<"| One Month (30 days)         : RM " << fixed << setprecision(2) << PRICE << setw(12) << " |" << endl;
+    cout<<"| Savings with Pass per month : RM " << saveMonth << setw(9) << " |" << endl;
+    cout<<"================================================="<<endl<<endl;
 }
 
 // Renew Pass
@@ -807,7 +863,10 @@ void renewApplication(int index)
         cout << "\nEnter new month (YYYY-MM or 0 to cancel): ";
 
         getline(cin, month);
-        if(month == "0") return;
+        if(month == "0"){
+        	cout<<endl;
+        	return;
+		}
 
         if(month.length() != 7 || month[4] != '-'){
             cout << "[ERROR] Invalid format!\n";
@@ -858,7 +917,25 @@ void renewApplication(int index)
             continue;
         }
         break;
+	
     }
+    
+    int confirm;
+	do{
+        cout<<"\n-----Confirm Renewal?-----"<<endl;
+		cout<<"| 1. Confirm             |"<<endl;
+		cout<<"| 0. Cancel              |"<<endl;
+		cout<<"--------------------------"<<endl;
+	
+		cout<<"Select an option: ";
+		cin>>confirm;
+
+        switch(confirm){
+        	case 1: continue;
+            case 0: cout<<"Renewal cancelled.\n"; return;
+            default:limit_input(); cout<<"\nInvalid Option! Please Enter the Number 1 or 0."<<endl; 
+        }
+    }while(confirm != 1 || confirm !=0);
 
     applications[realIndex].month = month;
     applications[realIndex].status = STATUS_PENDING;
@@ -1005,10 +1082,10 @@ void viewPass(int index)
 
 	for(int i = 0; i < passCount; i++){
         if(passes[i].studentID == students[index].id){
-        	cout << "| Pass ID   : " << passes[i].passID << string(30-passes[i].passID.length(), ' ') << "|\n";
-        	cout << "| Start Date: " << passes[i].startDate << string(30-passes[i].startDate.length(), ' ') << "|\n";
-        	cout << "| End Date  : " << passes[i].endDate << string(30-passes[i].endDate.length(), ' ') << "|\n";
-        	cout << "| Status    : " << passes[i].status << string(30-passes[i].status.length(), ' ') << "|\n";
+        	cout << "| Pass ID   : " << passes[i].passID << string(25-passes[i].passID.length(), ' ') << "|\n";
+        	cout << "| Start Date: " << passes[i].startDate << string(25-passes[i].startDate.length(), ' ') << "|\n";
+        	cout << "| End Date  : " << passes[i].endDate << string(25-passes[i].endDate.length(), ' ') << "|\n";
+        	cout << "| Status    : " << passes[i].status << string(25-passes[i].status.length(), ' ') << "|\n";
         	cout<<"========================================\n"<<endl;
         	found = true;
     	}
@@ -1195,246 +1272,325 @@ void viewSpendingAnalysis(int studentIndex)
 
 //======================================== Billing ========================================
 // Billing Menu
-void billMenu(int studentIndex)
+void billingMenu(int studentIndex)
 {
-    cout<<"====================================="<<endl;
-    cout<<"|              BILLING              |"<<endl;
-    cout<<"====================================="<<endl;
-    
-    paymentMenu(studentIndex);
-
+	int choice;
+	
+	do{
+		cout<<"========== BILLING MODULE =========="<<endl;
+		cout<<"| 1. My Billing                    |"<<endl;
+		cout<<"| 2. Payment History               |"<<endl;
+		cout<<"| 3. Back to Student Dashboard     |"<<endl;	
+		cout<<"===================================="<<endl;
+		
+		cout<<"Select an option: ";
+		cin>>choice;
+		
+		switch(choice)
+		{
+			case 1: myBilling(studentIndex); break;
+			case 2: paymentHistory(studentIndex); break;
+			case 3: cout<<"\nReturn to Student Dashboard...\n"; loading_screen(); clear_screen(); return;
+			default:limit_input(); cout<<"\nInvalid Option! Please Enter the Number 1-3."<<endl; 
+		}
+	}while(choice != 3);
+	
 }
 
-// Payment Menu
-void paymentMenu(int studentIndex)
+// My Billing
+void myBilling(int studentIndex)
 {
-    string sid = students[studentIndex].id;
-
-    cout << "\n========================================\n";
-    cout << "|               PAYMENT                |\n";
-    cout << "========================================\n";
-
-    bool found = false;
-
-    for(int i = 0; i < applicationCount; i++){
-        if(applications[i].studentID == sid){
-            found = true;
-
-            // ===== SHOW APPLICATION =====
-            cout << "| Application ID : " << applications[i].appID << endl;
-            cout << "| Month          : " << applications[i].month << endl;
-            cout << "| Status         : " << applications[i].status << endl;
-            cout << "| Payment        : " << applications[i].payment << endl;
-            cout << "========================================\n";
-
-            // ===== CASE 1: PENDING =====
-            if(applications[i].status == STATUS_PENDING){
-                
-				cout << "Your application is still processing.\n";
-                cout << "Please wait 3-5 working days.\n";
-                return;
-            }
-
-            // ===== CASE 2: REJECTED =====
-            if(applications[i].status == STATUS_REJECTED){
-                
-				cout << "Your application was rejected.\n";
-                return;
-            }
-
-            // ===== CASE 3: APPROVED + UNPAID =====
-            if(applications[i].status == STATUS_APPROVED && applications[i].payment != STATUS_PAID){
-            	
-				string month;
-
-                // ===== INPUT MONTH =====
-                while(true){
-                    cout << "\nEnter the month you request for pass (YYYY-MM or 0 to cancel): ";
-                    cin >> month;
-
-                    if(month == "0") return;
-
-                    if(month.length() == 7 && month[4] == '-'){
-						int m = stringToInt(month.substr(5,2));
-
-                        if(m >= 1 && m <= 12){
-                            break; // valid
-                        }
-                    }
-                    cout << "Invalid month format! Try again.\n";
-                }
-
-                // ===== PAYMENT METHOD =====
-                string method;
-                while(true){
-                    method = choosePaymentMethod();
-
-                    if(method != "Invalid") break;
-                    cout << "Invalid method! Please choose again.\n";
-                }
-
-                // ===== PAYMENT PROCESS =====
-                double amount = 40.0;
-                string pid = generatePaymentID();
-                string dateTime = getCurrentDateTime();
-
-                applications[i].payment = STATUS_PAID;
-                
-                // Activate pass after payment
-				for(int p = 0; p < passCount; p++){
-				    if(passes[p].studentID == sid && passes[p].status == STATUS_PENDINGPAY){
-					    passes[p].status = STATUS_ACTIVE;
-					}
-				}
+	string sid = students[studentIndex].id;
+	
+	cout<<"\n================================================="<<endl;
+	cout<<"|                   MY BILLING                  |"<<endl;
+	cout<<"================================================="<<endl;
+	cout<<"| "<<left
+		<< setw(5) <<"No"
+		<< setw(10) <<"Pass ID"
+		<< setw(10) <<"Month"
+		<< setw(10) <<"Status"
+		<< setw(10) <<"Payment" <<" |"<<endl;
+    cout<<"|-----------------------------------------------|"<<endl;
+	
+	bool found = false;
+	int no = 1;
+	
+	for(int i = 0; i < applicationCount; i++){
+		if(applications[i].studentID == sid){ 
+			found = true;
+			
+			cout<<"| "<<left
+				<<setw(5)<<no++
+				<<setw(10)<<applications[i].appID
+                <<setw(10)<<applications[i].month
+                <<setw(10)<<applications[i].status
+                <<setw(10)<<applications[i].payment<<" |"<<endl;
+			cout<<"================================================="<<endl;
+	
+			//===== STATUS CONTROL =====
+			for(int i = applicationCount - 1; i >= 0; i--){
+				// STATUS PENDING
+				if(applications[i].status == STATUS_PENDING){
+					cout<<"Your application is still processing."<<endl;
+					cout<<"Please wait 3 to 5 working days."<<endl<<endl;
+					return;
+			}
+			
+			// STATUS REJECTED
+			if(applications[i].status == STATUS_REJECTED){
+				cout<<"\nYour application was REJECTED."<<endl;
+				cout<<"1. View Application Status"<<endl;
 				
-				ofstream passFile("passes.txt");
+				cout<<"\nPress 0 to return: "<<endl;
+				int opt; cin>>opt;
+				
+				if(opt == 1)
+					viewApplication(studentIndex);
+					
+				return;
+			}
+			
+			// STATUS APPROVED + UNPAID
+			if(applications[i].status == STATUS_APPROVED && applications[i].payment == STATUS_UNPAID){
+				cout<<"Application APPROVED. Processing to payment..."<<endl;
+				processPayment(studentIndex, i);
+				return;
+			}
+			
+			// STATUS PAID
+			if(applications[i].payment == STATUS_PAID){
+				cout<<"Payment already completed.\n"<<endl;
+				return;
+			}
+		}
+	}
+}
 
-				for(int p = 0; p < passCount; p++){
-				    passFile << passes[p].passID << ","
-				             << passes[p].studentID << ","
-				             << passes[p].startDate << ","
-				             << passes[p].endDate << ","
-				             << passes[p].status << endl;
-				}
-				passFile.close();
-                
-                // ===== DAILY COMPARISON (8–10 HOURS) =====
-                int minH = 8, maxH = 10;
+	if(!found){
+	cout<<"|         --NO BILLING RECORD FOUND!--          |"<<endl;
+	cout<<"================================================="<<endl;
+	}
+}
 
-                double minDaily = minH * 0.5 * 30;
-                double maxDaily = maxH * 0.5 * 30;
+// Payment Process
+void processPayment(int studentIndex, int appIndex)
+{
+	string sid = students[studentIndex].id;
+	string method;
+	
+	while(true)
+	{
+		method = paymentMethod(appIndex, studentIndex);
+		
+		if(method == "0") return;
+		if(method != "Invalid") break;
+		
+		cout<<"Invalid method! Try again."<<endl;
+	}
+}
 
-                double minSave = minDaily - amount;
-                double maxSave = maxDaily - amount;
+// Payment Method
+string paymentMethod(int appIndex, int studentIndex)
+{
+	string method;
+	int opt;
+	
+	while(true){
+		cout<<"\n========== PAYMENT METHOD =========="<<endl;
+		cout<<"| 1. TNG QR                        |"<<endl;
+		cout<<"| 2. DuitNow QR                    |"<<endl;
+		cout<<"| 3. Credit/Debit Card             |"<<endl;
+		cout<<"| 4. International Card            |"<<endl;	
+		cout<<"| 5. Return                        |"<<endl;
+		cout<<"===================================="<<endl;
+		cout<<"Select an option: ";
+		cin>>opt;
+		
+		switch(opt){
+			case 1: method = "TNG QR"; break;
+			case 2: method = "DuitNow QR"; break;
+			case 3: method = "Credit/Debit Card"; break;
+			case 4: method = "International Card"; break;
+			case 5: cout<<endl; return "0";
+			default: limit_input(); cout<<"\nInvalid Option! Please Enter the Number 1-5."<<endl;
+			continue;
+		}
+		break;
+	}
 
-                // ===== SAVE APPLICATION =====
-                ofstream file("applications.txt");
-
-                for(int j = 0; j < applicationCount; j++)
-                {
-                    file << applications[j].appID << ","
-                         << applications[j].studentID << ","
-                         << applications[j].status << ","
-                         << applications[j].month << ","
-                         << applications[j].payment << endl;
-                }
-                file.close();
-
-                // ===== SAVE PAYMENT RECORD =====
-                ofstream payFile("payments.txt", ios::app);
-
-                payFile << pid << ","
-                        << sid << ","
-                        << method << ","
-                        << month << ","
-                        << amount << ","
-                        << dateTime << endl;
-
-                payFile.close();
-
-                // ===== RECEIPT =====
-                cout<<"\n================================================="<<endl;
-                cout<<"|                     RECEIPT                   |"<< endl;
-                cout<<"================================================="<<endl;
-                cout<<"| Payment ID   : " << left << setw(15) << pid << "|" << endl;
-	            cout<<"| Student ID   : " << left << setw(15) << sid << "|" << endl;
-	            cout<<"| Months       : " << left << setw(15) << month << "|" << endl;
-	            cout<<"| Amount Paid  : RM " << left << setw(10) << amount << "|" << endl;
-	            cout<<"| Method       : " << left << setw(15) << method << "|" << endl;
-	            cout<<"| Date & Time  : " << left << setw(15) << dateTime << "|" << endl;
-                cout<<"|" << setw(30) << "|" << endl;
-                cout<<"|--------------- Cost Comparison ---------------|" <<endl;
-                cout<<"| Daily (6 to 9 hours): RM" << minDaily << " - RM" << maxDaily << endl;
-                cout<<"| You saved           : RM" << minSave << " - RM" << maxSave << endl;
-                cout<<"================================================="<<endl;
-
-                return;
-            }
-
-            // ===== CASE 4: ALREADY PAID =====
-            if(applications[i].payment == STATUS_PAID){
-                cout << "Payment already completed.\n";
-                return;
-            }
-        }
+	//Payment Details
+	string sid = students[studentIndex].id;
+	string month = applications[appIndex].month;
+	double amount = PRICE;
+	
+	string pid = generatePaymentID();
+	string time = getCurrentTime();
+		
+	// Get Current Date
+	int d, m, y;
+	getCurrentDate(d, m, y);
+	string date = trackFormatDate(d, m, y);
+	
+	// Update Status
+	applications[appIndex].payment = STATUS_PAID;
+	
+	// Activate Pass
+	for(int p = 0; p < passCount; p++){
+		if(passes[p].studentID == sid && passes[p].status == STATUS_PENDINGPAY){
+			passes[p].status = STATUS_ACTIVE;
+	    }
     }
-    cout<<endl;
+				
+	ofstream passFile("passes.txt");
 
-    if(!found)
-    {
-        cout << "|        NO APPLICATION FOUND!         |\n";
-        cout << "========================================\n\n";
-    }
+	for(int p = 0; p < passCount; p++){
+		passFile << passes[p].passID << ","
+				 << passes[p].studentID << ","
+				 << passes[p].startDate << ","
+				 << passes[p].endDate << ","
+				 << passes[p].status << endl;
+	}
+	passFile.close();
+	
+	// Save Application File
+	ofstream file("applications.txt");
+	
+	for(int i = 0;i < applicationCount;i++){
+		file << applications[i].appID << ","
+			 << applications[i].studentID << ","
+			 << applications[i].status << ","
+			 << applications[i].month << ","
+			 << applications[i].payment << endl;
+	}
+	file.close();
+	
+	// Save Payment History
+	ofstream payFile("payments.txt", ios::app);
+	
+	payFile << pid << ","
+	        << sid << ","
+	        << applications[appIndex].appID << ","
+	        << applications[appIndex].month << ","
+	        << method << ","
+	        << amount << ","
+	        << date << endl;
+	
+	payFile.close();
+
+    // ===== RECEIPT =====
+    cout<<"\n================================================="<<endl;
+    cout<<"|                     RECEIPT                   |"<< endl;
+    cout<<"================================================="<<endl;
+    cout<<"| Payment ID   : " << left << setw(15) << pid << "|" << endl;
+    cout<<"| Student ID   : " << left << setw(15) << sid << "|" << endl;
+    cout<<"| Months       : " << left << setw(15) << month << "|" << endl;
+    cout<<"| Amount Paid  : RM " << left << setw(13) << amount << "|" << endl;
+    cout<<"| Method       : " << left << setw(15) << method << "|" << endl;
+    cout<<"| Date         : " << left << setw(15) << date << "|" << endl;
+    cout<<"| Time         : " << left << setw(15) << time << "|" << endl;
+	cout<<"================================================="<<endl;
+	cout<<"Payment Successful!"<<endl;
+
+	return "0";
+}
+
+// Payment Receipt
+
+					
+// Payment History
+void paymentHistory(int studentIndex)
+{
+	cout<<"\n==============================================================================="<<endl;
+	cout<<"|                               PAYMENT HISTORY                               |"<<endl;
+	cout<<"==============================================================================="<<endl;
+	cout<<"| "<<left
+		<< setw(5) <<"No"
+		<< setw(10) <<"PID"
+		<< setw(10) <<"PassID"
+		<< setw(10) <<"Month"
+		<< setw(15) <<"Amount(RM)" 
+		<< setw(15) <<"Method"
+		<< setw(10) <<"Date" <<" |"<<endl;
+	cout<<"|-----------------------------------------------------------------------------|"<<endl;
+	
+	string sid = students[studentIndex].id;
+	ifstream file("payments.txt");
+	
+	if(!file){
+		cout<<"|                        --NO PAYMENT HISTORY FOUND!--                        |"<<endl;
+		cout<<"===============================================================================\n"<<endl;
+		return;
+	}
+
+	string line;
+	int no = 1;
+	bool found = false;
+	 
+	while(getline(file, line)){
+		
+		stringstream ss(line);
+		string pid, studentID, passID, month, method, amount, date;
+		
+		getline(ss, pid, ',');
+		getline(ss, studentID, ',');
+		getline(ss, passID, ',');
+		getline(ss, month, ',');
+		getline(ss, method, ',');
+		getline(ss, amount, ',');
+		getline(ss, date, ',');
+		
+		if(studentID == sid){
+			found = true;
+			
+			cout<<"| "<<left
+				<<setw(5)<<no++
+                <<setw(10)<<pid
+                <<setw(10)<<passID
+                <<setw(10)<<month
+                <<setw(15)<<amount
+                <<setw(15)<<method
+                <<setw(10)<<date <<" |"<<endl;
+		}
+	}
+	
+	if(!found){
+		cout<<"|                            --NO RECORDS FOUND!--                            |"<<endl;
+		cout<<"===============================================================================\n"<<endl;
+	}
+	cout<<"===============================================================================\n"<<endl;
+	file.close();
 }
 
 // Generate Payment ID
 string generatePaymentID()
 {
-    ifstream file("payments.txt");
-    string line, lastID = "PID1000";
- 
-    while(getline(file, line)){
-        stringstream ss(line);
-        getline(ss, lastID, ',');
-    }
-
-    int num = stringToInt(lastID.substr(3));
-    return "PID" + intToString(num + 1);
-}
-
-// Get current date & time
-string getCurrentDateTime()
-{
-    time_t now = time(0);
-    tm *ltm = localtime(&now);
-
-    stringstream ss;
-    ss << (1900 + ltm->tm_year) << "-"
-       << (1 + ltm->tm_mon) << "-"
-       << ltm->tm_mday << " "
-       << ltm->tm_hour << ":"
-       << ltm->tm_min;
-
+	ifstream file("payments.txt");
+	string line, lastID = "PID1000";
+	
+	while(getline(file, line)){
+		stringstream ss(line);
+		getline(ss, lastID, ',');
+	}
+	
+	int num = stringToInt(lastID.substr(3));
+	
+	stringstream ss;
+    ss << "PID" << (num + 1);
     return ss.str();
 }
 
-// Check if student has APPROVED application
-bool checkApproval(string studentID)
+// Get Current Time
+string getCurrentTime()
 {
-    for(int i = 0; i < applicationCount; i++){
-        if(applications[i].studentID == studentID &&
-           applications[i].status == STATUS_APPROVED &&
-           applications[i].payment != STATUS_PAID){
-            return true;
-        }
-    }
-    return false;
-}
-
-// Payment Choice
-string choosePaymentMethod()
-{
-    int opt;
-    
-    while(true){
-        cout<<"---------- Payment Choice ----------"<<endl;
-        cout<<"| 1. TNG QR                        |"<<endl;
-        cout<<"| 2. DuitNow QR                    |"<<endl;
-        cout<<"| 3. Credit / Debit Card           |"<<endl;
-        cout<<"| 4. International Card            |"<<endl;
-        cout<<"------------------------------------"<<endl;
-        
-        cout << "Enter choice: ";
-        cin >> opt;
-
-	    switch(opt){
-	        case 1: return "TNG QR";
-	        case 2: return "DuitNow QR";
-	        case 3: return "Card";
-	        case 4: return "International Card";
-	        default:limit_input(); cout<<"\nInvalid Option! Please Enter the Number 1-4."<<endl;
-	    }
-    }   
+	time_t now = time(0);
+	tm * ltm = localtime(&now);
+	
+	stringstream ss;
+	ss << setw(2) << setfill('0') << ltm->tm_hour << ":"
+	   << setw(2) << setfill('0') << ltm->tm_min;
+	   
+	return ss.str();
 }
 
 
@@ -1508,8 +1664,9 @@ void viewAllTransactions(int studentIndex)
         cout << "\nNo transaction records found.\n";
     }
     else {
-        cout << "==========================================================" << endl;
+        cout << "|========================================================|" << endl;
         cout << "| Total Records: " << count <<"\t\t\t\t\t |"<< endl;
+        cout << "==========================================================" << endl;
     }
 
     // Pass Section
@@ -1518,7 +1675,7 @@ void viewAllTransactions(int studentIndex)
     for (int i = 0; i < passCount; i++) {
         if (passes[i].studentID == sid) {
             if (!hasPass) {
-                cout << "\n|------------------- Parking Passes ---------------------|" << endl;
+                cout << "|------------------- Parking Passes ---------------------|" << endl;
 
                 cout << "| " << left
                     << setw(10) << "Pass ID"
@@ -1724,7 +1881,7 @@ void admin_login()
 
 		    getline(ss, id, ',');
 		    getline(ss, username, ',');
-		    getline(ss, password, ',');
+		    getline(ss, password);
 		
 		    if(adminID == id && adminPassword == password){
 		        loginSuccess = true;
@@ -1734,7 +1891,7 @@ void admin_login()
 		file.close();
 		
 		if(!loginSuccess){
-		    cout<<"\nLogin Failed! Please try again."<<endl<<endl;
+		    cout<<"\nLogin Failed! Please try again."<<endl;
 		}
 	}while(!loginSuccess);
 	
@@ -2304,4 +2461,3 @@ void monthlyIncome()
     cout<<"==================================="<<endl<<endl;
     return;
 }
-
