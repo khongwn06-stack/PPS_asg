@@ -743,7 +743,7 @@ void submitApplication(int index)
             case 0: cout<<"Application cancelled.\n"; return;
             default:limit_input(); cout<<"\nInvalid Option! Please Enter the Number 1 or 0."<<endl; 
         }
-    }while(confirm != 1 || confirm !=0);
+    }while(confirm != 1 && confirm !=0);
 	
     Application a;
     a.appID = generateApplicationID();
