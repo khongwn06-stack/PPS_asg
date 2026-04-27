@@ -281,6 +281,12 @@ int stringToInt(string str){
     return num;
 }
 
+double stringToDouble(string str){
+    stringstream ss(str);
+    double num;
+    ss >> num;
+    return num;
+}
 
 
 //=========================================================== Main Menu ===========================================================
@@ -2168,44 +2174,54 @@ void app_validation()
 	    cout<<"| Month         : " << applications[appIndex].month << string(30-applications[appIndex].month.length(), ' ') <<"|"<<endl;
 	    cout<<"| Status        : " << applications[appIndex].status << string(30-applications[appIndex].status.length(), ' ') <<"|"<<endl;
 	    cout<<"================================================="<<endl;
-	
-	    cout << "Start Validation? (y/n): ";
-	    cin >> validation;
+		
+		do{
+			cout << "Start Validation? (y/n): ";
+		    cin >> validation;
+				
+			if(validation == 'y' || validation == 'Y'){
+		        string reason = validate_app(
+		            applications[appIndex].studentID,
+		            applications[appIndex].appID
+	        	);
+		
+		        if(reason == STATUS_APPROVED){
+		            applications[appIndex].status = STATUS_APPROVED;
+		            loading_screen();
+		            cout << "Application APPROVED!" <<endl<<endl;
+		            
+		            createPass(
+		                applications[appIndex].studentID,
+		                applications[appIndex].month + "-01", // safe default date
+		                1 // default 1 month (you can extend later)
+		            );
+		        }
+		        else{
+		            applications[appIndex].status = STATUS_REJECTED;
+		            loading_screen();
+		            cout << "Rejected Reason: " << reason <<endl<<endl;
+		        }
+		        // save back to file
+		        ofstream file("applications.txt");
+		        for(int i = 0; i < applicationCount; i++){
+		            file << applications[i].appID << ","
+		                 << applications[i].studentID << ","
+		                 << applications[i].status << ","
+		                 << applications[i].month << ","
+		                 << applications[i].payment << endl;
+		        }
+		        file.close();
+		        return;
+			}
 			
-		if(validation == 'y' || validation == 'Y'){
-	        string reason = validate_app(
-	            applications[appIndex].studentID,
-	            applications[appIndex].appID
-        	);
-	
-	        if(reason == STATUS_APPROVED){
-	            applications[appIndex].status = STATUS_APPROVED;
-	            loading_screen();
-	            cout << "Application APPROVED!" <<endl<<endl;
-	            
-	            createPass(
-	                applications[appIndex].studentID,
-	                applications[appIndex].month + "-01", // safe default date
-	                1 // default 1 month (you can extend later)
-	            );
-	        }
-	        else{
-	            applications[appIndex].status = STATUS_REJECTED;
-	            loading_screen();
-	            cout << "Rejected Reason: " << reason <<endl<<endl;
-	        }
-	        // save back to file
-	        ofstream file("applications.txt");
-	        for(int i = 0; i < applicationCount; i++){
-	            file << applications[i].appID << ","
-	                 << applications[i].studentID << ","
-	                 << applications[i].status << ","
-	                 << applications[i].month << ","
-	                 << applications[i].payment << endl;
-	        }
-	        file.close();
-		}
-	}while(validation == 'n' || validation == 'N');
+			else if(validation == 'n' || validation == 'N'){
+	        	break;
+		    }
+		    else{
+		        cout<<"\nInvalid Option! Please Enter 'y' or 'n'.\n";
+		    }
+		}while(true);
+	}while(true);
 }
 
 // Student details found
@@ -2467,7 +2483,7 @@ void passUsageRate()
     getCurrentDate(curD, curM, curY);
 
     for(int i = 0; i < passCount; i++){         
-        if(passes[i].status == STATUS_ACTIVE || passes[i].status == STATUS_PENDINGPAY){
+        if(passes[i].endDate.length() >= 10){
             // parse end date YYYY-MM-DD
             int eYear = stringToInt(passes[i].endDate.substr(0,4));
             int eMonth = stringToInt(passes[i].endDate.substr(5,2));
@@ -2478,8 +2494,7 @@ void passUsageRate()
                            (eYear == curY && eMonth < curM) ||
                            (eYear == curY && eMonth == curM && eDay < curD);
 
-            if(!expired)
-            {
+            if(!expired){
                 activePass++;
             }
         }
@@ -2526,11 +2541,12 @@ void monthlyIncome()
     // first pass: collect years
     while(getline(file, line)){
         stringstream ss(line);
-        string pid, sid, appID, month, method, amount, date;
+        string pid, sid, appID, passID, month, method, amount, date;
 
         getline(ss, pid, ',');
         getline(ss, sid, ',');
         getline(ss, appID, ',');
+        getline(ss, passID, ',');
         getline(ss, month, ',');
         getline(ss, method, ',');
         getline(ss, amount, ',');
@@ -2570,11 +2586,12 @@ void monthlyIncome()
 
         while(getline(file2, line)){
             stringstream ss(line);
-            string pid, sid, appID, month, method, amount, date;
+            string pid, sid, appID, passID, month, method, amount, date;
 
             getline(ss, pid, ',');
             getline(ss, sid, ',');
             getline(ss, appID, ',');
+            getline(ss, passID, ',');
             getline(ss, month, ',');
             getline(ss, method, ',');
             getline(ss, amount, ',');
@@ -2584,7 +2601,7 @@ void monthlyIncome()
             int mn = stringToInt(month.substr(5,2));
 
             if(yr == year){
-                monthly[mn] += stringToInt(amount);
+                monthly[mn] += stringToDouble(amount);
             }
         }
 
