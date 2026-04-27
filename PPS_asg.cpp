@@ -1301,7 +1301,7 @@ void billingMenu(int studentIndex)
 	int choice;
 	
 	do{
-		cout<<"============= BILLING =============="<<endl;
+		cout<<"\n============= BILLING =============="<<endl;
 		cout<<"| 1. My Billing                    |"<<endl;
 		cout<<"| 2. Payment Receipt               |"<<endl;
 		cout<<"| 3. Payment History               |"<<endl;
@@ -1378,18 +1378,26 @@ void myBilling(int studentIndex)
 
     // User choose 
     int choice;
-    cout<<"Select No (0 to exit): ";
-    cin>>choice;
+    
+    while(true){
+    	cout<<"Select No (0 to exit): ";
+    	cin>>choice;
+    	
+    	if(!cin.fail()) break;
+    	
+    	limit_input();
+    	cout<<"\nInvalid input! Please enter the number from the 'No' column only.\n"<<endl;
+	}
 
     if(choice == 0) return;
     if(choice < 1 || choice > count){
-        cout<<"Invalid selection!\n\n";
+        cout<<"Invalid selection!"<<endl;
         return;
     }
 
     int i = list[choice - 1];
 
-    // ============ Status Check ============
+    // ====== Status Check ======
     // Status Pending
     if(applications[i].status == STATUS_PENDING){
         cout << "\nYour application is still processing.\n\n";
@@ -1544,11 +1552,12 @@ void printReceiptByApp(string targetAppID, string targetStudentID)
 
     while (getline(file, line)){
         stringstream ss(line);
-        string pid, sid, appID, month, method, amount, date;
+        string pid, sid, appID, passID, month, method, amount, date;
 
         getline(ss, pid, ',');
         getline(ss, sid, ',');
         getline(ss, appID, ',');
+        getline(ss, passID, ',');
         getline(ss, month, ',');
         getline(ss, method, ',');
         getline(ss, amount, ',');
@@ -1563,6 +1572,7 @@ void printReceiptByApp(string targetAppID, string targetStudentID)
 		cout << "| Payment ID     : " << pid << string(30 - pid.length(), ' ') << " |" << endl;
 		cout << "| Student ID     : " << sid << string(30 - sid.length(), ' ') << " |" << endl;
 		cout << "| Application ID : " << appID << string(30 - appID.length(), ' ') << " |" << endl;
+		cout << "| Pass ID        : " << passID << string(30 - passID.length(), ' ') << " |" <<endl;
 		cout << "| Month          : " << month << string(30 - month.length(), ' ') << " |" << endl;
 		cout << "| Method         : " << method << string(30 - method.length(), ' ') << " |" << endl;
 		ostringstream ss;
