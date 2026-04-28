@@ -107,7 +107,16 @@ void loadPasses()
         getline(ss, passes[passCount].startDate, ',');
         getline(ss, passes[passCount].endDate, ',');
         getline(ss, passes[passCount].status, ',');
+		
+		// FIX date format from DD/MM/YYYY to YYYY-MM-DD
+        if(passes[passCount].startDate.find('/') != string::npos){
+            string d = passes[passCount].startDate.substr(0,2);
+            string m = passes[passCount].startDate.substr(3,2);
+            string y = passes[passCount].startDate.substr(6,4);
 
+            passes[passCount].startDate = y + "-" + m + "-" + d;
+        }
+		
         passCount++;
     }
 
@@ -228,7 +237,7 @@ string validate_app(string studentID, string appID);
 
 // Pass.txt
 string generatePassID();
-void createPass(string studentID, string startDate, int months);
+void createPass(string studentID, string startDate);
 
 // Summary Analytics Reports
 void fullReport();
@@ -355,11 +364,12 @@ void getCurrentDate(int& day, int& month, int& year) // Get current system date
     year = timeInfo->tm_year + 1900;
 }
 
-string trackFormatDate(int day, int month, int year) // Format date as DD/MM/YYYY
+string trackFormatDate(int day, int month, int year) // Format date as YYYY-MM-DD
 {
     ostringstream oss;
-    oss << setfill('0') << setw(2) << day << "/"
-        << setfill('0') << setw(2) << month << "/" << year;
+    oss << year << "-"
+        << setfill('0') << setw(2) << month << "-"
+        << setfill('0') << setw(2) << day;
     return oss.str();
 }
 
@@ -371,6 +381,21 @@ int getDaysInMonth(int month, int year) // Get days in a month
     case 2: return ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) ? 29 : 28;
     default: return 30;
     }
+}
+
+string addOneMonth(string startDate) // Only between one month
+{
+    int year = stringToInt(startDate.substr(0,4));
+    int month = stringToInt(startDate.substr(5,2));
+
+    month++;
+    if(month > 12){
+        month = 1;
+        year++;
+    }
+
+    return intToString(year) + "-" +
+           (month < 10 ? "0" : "") + intToString(month) + "-01";
 }
 
 
@@ -1486,20 +1511,53 @@ string paymentMethod(int appIndex, int studentIndex)
 	// Update Status
 	applications[appIndex].payment = STATUS_PAID;
 	
-	//Create New Pass 
-	string newPassID = generatePassID();
+	//Update Pass 
+	bool updated = false;
+
+    for(int i = 0; i < passCount; i++){
+        if(passes[i].studentID == sid && passes[i].startDate.substr(0,7) == applications[appIndex].month){
+            passes[i].status = STATUS_ACTIVE;
+            updated = true;
+            break;
+        }
+    }
 	
-	Pass newPass;
-	newPass.passID = newPassID;
-	newPass.studentID = sid;
+//	if(!updated){
+//        string newPassID = generatePassID();
+//
+//        Pass newPass;
+//        newPass.passID = newPassID;
+//        newPass.studentID = sid;
+//        newPass.startDate = date;
+//        newPass.endDate = applications[appIndex].month;
+//        newPass.status = STATUS_ACTIVE;
+//
+//        passes[passCount++] = newPass;
+//    }
+
+	string currentPassID = "";
+
+	if(!updated){
+	    string newPassID = generatePassID();
 	
-	newPass.startDate = date;
-	newPass.endDate = applications[appIndex].month;
-	newPass.status = STATUS_ACTIVE;
+	    string appMonth = applications[appIndex].month;
 	
-	passes[passCount++] = newPass;
+	    string startDate = appMonth + "-01";
+	    string endDate = addOneMonth(startDate);
 	
-				
+	    Pass newPass;
+	    newPass.passID = newPassID;
+	    newPass.studentID = sid;
+	    newPass.startDate = startDate;
+	    newPass.endDate = endDate;
+	    newPass.status = STATUS_ACTIVE;
+	
+	    passes[passCount++] = newPass;
+	
+	    currentPassID = newPassID;
+	}
+	
+	//Save passes.txt			
 	ofstream passFile("passes.txt");
 
 	for(int p = 0; p < passCount; p++){
@@ -1523,13 +1581,23 @@ string paymentMethod(int appIndex, int studentIndex)
 	}
 	file.close();
 	
+	string passID = "";
+
+	for(int i = 0; i < passCount; i++){
+	    if(passes[i].studentID == sid &&
+	       passes[i].status == STATUS_ACTIVE){
+	        passID = passes[i].passID;
+	        break;
+	    }
+	}
+	
 	// Save Payment History
 	ofstream payFile("payments.txt", ios::app);
 	
 	payFile << pid << ","
 	        << sid << ","
 	        << applications[appIndex].appID << ","
-	        << newPassID << ","
+	        << passID << ","
 	        << applications[appIndex].month << ","
 	        << method << ","
 	        << amount << ","
@@ -2192,8 +2260,7 @@ void app_validation()
 		            
 		            createPass(
 		                applications[appIndex].studentID,
-		                applications[appIndex].month + "-01", // safe default date
-		                1 // default 1 month (you can extend later)
+		                applications[appIndex].month + "-01" // safe default date
 		            );
 		        }
 		        else{
@@ -2237,8 +2304,7 @@ void approve_app(string targetAppID)
 
     createPass(
         applications[idx].studentID,
-        applications[idx].month + "-01",
-        1
+        applications[idx].month + "-01"
     );
 
     cout << "Approved and pass created!\n";
@@ -2329,24 +2395,30 @@ string generatePassID()
 }
 
 // Create parking pass (passes.txt)
-void createPass(string studentID, string startDate, int months)
+void createPass(string studentID, string startDate)
 {
+//	// ensure format is YYYY-MM-DD
+//	if(startDate.length() != 10 || startDate[4] != '-' || startDate[7] != '-'){
+//	    cout << "ERROR: Invalid date format in createPass()\n";
+//	    return;
+//	}
+
 	ofstream outFile("passes.txt", ios::app);
     string passID = generatePassID();
+    string endDate = addOneMonth(startDate);
 
-    int year = stringToInt(startDate.substr(0,4));
-    int month = stringToInt(startDate.substr(5,2));
-    int day = stringToInt(startDate.substr(8,2));
-
-    month += months;
-
-    while(month > 12){
-        month -= 12;
-        year++;
-    }
-
-	string endDate = intToString(year) + "-" + (month < 10 ? "0" : "") + intToString(month) + "-" + (day < 10 ? "0" : "") + intToString(day);
-
+//    int year = stringToInt(startDate.substr(0,4));
+//    int month = stringToInt(startDate.substr(5,2));
+//
+//    month += 1;
+//
+//    while(month > 12){
+//        month -= 12;
+//        year++;
+//    }
+//
+//	string endDate = intToString(year) + "-" + (month < 10 ? "0" : "") + intToString(month) + "-01";
+	        
     // into struct
     passes[passCount].passID = passID;
     passes[passCount].studentID = studentID;
@@ -2538,11 +2610,13 @@ void passUsageRate()
             int eDay = stringToInt(passes[i].endDate.substr(8,2));
 
             // check expiry (simple logic: expired if year/month before current)
-            bool expired = (eYear < curY) ||
-                           (eYear == curY && eMonth < curM) ||
-                           (eYear == curY && eMonth == curM && eDay < curD);
+//            bool expired = (eYear < curY) ||
+//                           (eYear == curY && eMonth < curM) ||
+//                           (eYear == curY && eMonth == curM && eDay < curD);
+			bool active = (eYear > curY) ||
+              (eYear == curY && eMonth >= curM);
 
-            if(!expired){
+            if(active){
                 activePass++;
             }
         }
