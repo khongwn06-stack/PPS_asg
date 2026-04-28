@@ -2467,7 +2467,7 @@ void averageApply()
 void total_app()
 {
     cout << "\n======================================" << endl;
-    cout << "|    TOTAL APPLICATIONS PER YEAR     |" << endl;
+    cout << "|    Total Applications per Year     |" << endl;
     cout << "======================================" << endl;
 
     if(applicationCount == 0){
