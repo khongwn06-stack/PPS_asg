@@ -2370,7 +2370,7 @@ void fullReport()
 	
 	do{
 		cout<<"============== ANALYTICS REPORTS ==============="<<endl;
-        cout<<"| 1. Total Applications                        |"<<endl;
+        cout<<"| 1. Total Applications per Year               |"<<endl;
         cout<<"| 2. Average Appl per Student (by Faculty)     |"<<endl;
         cout<<"| 3. Parking Pass Usage Rate                   |"<<endl;
         cout<<"| 4. Monthly Income per Year                   |"<<endl;
@@ -2463,11 +2463,59 @@ void averageApply()
     return;
 }
 
-// Total Applications
+// Total Applications per Year
 void total_app()
 {
-	cout << "\nTotal Applications: " << applicationCount <<endl<<endl;
-	return;
+    cout << "\n======================================" << endl;
+    cout << "|    TOTAL APPLICATIONS PER YEAR     |" << endl;
+    cout << "======================================" << endl;
+
+    if(applicationCount == 0){
+        cout << "|        --No data available--       |" << endl;
+        cout << "======================================\n" << endl;
+        return;
+    }
+
+    // store unique years
+    int years[50];
+    int counts[50] = {0};
+    int yearCount = 0;
+
+    for(int i = 0; i < applicationCount; i++){
+        string month = applications[i].month;
+
+        int year = stringToInt(month.substr(0,4)); // extract YYYY
+
+        bool found = false;
+
+        for(int j = 0; j < yearCount; j++){
+            if(years[j] == year){
+                counts[j]++;
+                found = true;
+                break;
+            }
+        }
+
+        if(!found){
+            years[yearCount] = year;
+            counts[yearCount] = 1;
+            yearCount++;
+        }
+    }
+
+    // display
+    cout << "| " << left
+         << setw(12) << "Year"
+         << setw(22) << "Total Applications" << " |" << endl;
+    cout << "|------------------------------------|" << endl;
+
+    for(int i = 0; i < yearCount; i++){
+        cout << "| " << left
+             << setw(12) << years[i]
+             << setw(22) << counts[i] << " |" << endl;
+    }
+
+    cout << "======================================\n" << endl;
 }
 
 // Parking Pass Usage Rate
