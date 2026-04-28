@@ -1245,8 +1245,8 @@ void viewSpendingAnalysis(int studentIndex)
     cout << "===================================================" << endl;
 
     string sid = students[studentIndex].id;
-    cout << "  Student : " << students[studentIndex].name << " (" << sid << ")\n";
-    cout << "  Faculty : " << students[studentIndex].faculty << endl;
+    cout << "|  Student : " <<fixed<<setw(10)<<left<< students[studentIndex].name << " (" << sid << ")\t\t  |\n";
+    cout << "|  Faculty : " <<fixed<<setw(20)<<left<< students[studentIndex].faculty <<"\t\t  |"<< endl;
 
     // Count applications by status
     int totalApps = 0, approved = 0, rejected = 0, pending = 0;
@@ -1273,31 +1273,40 @@ void viewSpendingAnalysis(int studentIndex)
     }
 
     if (totalApps == 0) {
+    	cout << "---------------------------------------------------" << endl;
         cout << "\n  No records found for analysis.\n\n";
         return;
     }
 
     cout << "|-------------------------------------------------|" << endl;
-    cout << "\n  [A] APPLICATION SUMMARY\n\n";
-    cout << "  Total Applications  : " << totalApps << endl;
-    cout << "  Approved            : " << approved << endl;
-    cout << "  Rejected            : " << rejected << endl;
-    cout << "  Pending             : " << pending << endl;
+    cout << "|                                                 |";
+    cout << "\n|  [A] APPLICATION SUMMARY\t\t\t  |\n";
+    cout << "|                                                 |"<<endl;
+    cout << "|  Total Applications  : " <<fixed<<setw(10)<<left<< totalApps <<"\t\t  |"<< endl;
+    cout << "|  Approved            : " <<fixed<<setw(10)<<left<< approved <<"\t\t  |"<< endl;
+    cout << "|  Rejected            : " <<fixed<<setw(10)<<left<< rejected <<"\t\t  |"<< endl;
+    cout << "|  Pending             : " <<fixed<<setw(10)<<left<< pending <<"\t\t  |"<< endl;
     if (totalApps > 0)
-        cout << "  Approval Rate       : " << fixed << setprecision(1)
-        << ((double)approved / totalApps * 100.0) << "%" << endl;
-    cout << "  Paid Applications   : " << paidCount << endl;
-    cout << "\n|-------------------------------------------------|\n";
-    cout << "\n  [B] PASS SUMMARY\n\n";
-    cout << "  Active Passes       : " << activePass << endl;
-    cout << "  Expired Passes      : " << expiredPass << endl;
-    cout << "  Pending Payment     : " << pendingPayPass << endl;
+        cout << "|  Approval Rate       : " << fixed <<setw(5)<<left<< setprecision(1)
+        << ((double)approved / totalApps * 100.0) << "%" <<"\t\t\t  |"<< endl;
+    cout << "|  Paid Applications   : " <<fixed<<setw(10)<<left<< paidCount <<"\t\t  |"<< endl;
+    cout << "|                                                 |"<<endl;
+    cout << "|-------------------------------------------------|\n";
+    cout << "|                                                 |";
+    cout << "\n|  [B] PASS SUMMARY\t\t\t\t  |\n";
+    cout << "|                                                 |"<<endl;
+    cout << "|  Active Passes       : " <<fixed<<setw(10)<<left<< activePass <<"\t\t  |"<< endl;
+    cout << "|  Expired Passes      : " <<fixed<<setw(10)<<left<< expiredPass <<"\t\t  |"<< endl;
+    cout << "|  Pending Payment     : " <<fixed<<setw(10)<<left<< pendingPayPass <<"\t\t  |"<< endl;
 
     // Monthly calendar for current year
     int d, m, y;
     getCurrentDate(d, m, y);
-    cout << "\n|-------------------------------------------------|\n";
-    cout << "\n  [C] MONTHLY PASS CALENDAR FOR " << y << "\n\n";
+    cout << "|                                                 |"<<endl;
+    cout << "|-------------------------------------------------|\n";
+    cout << "|                                                 |";
+    cout << "\n|  [C] MONTHLY PASS CALENDAR FOR " << y << "\t\t  |\n";
+    cout << "|                                                 |"<<endl;
 
     for (int mon = 1; mon <= 12; mon++) {
         string monthKey = intToString(y) + "-" + (mon < 10 ? "0" : "") + intToString(mon);
@@ -1312,12 +1321,12 @@ void viewSpendingAnalysis(int studentIndex)
             }
         }
 
-        cout << "  " << left << setw(12) << getMonthName(mon);
+        cout << "|  " << left << setw(12) << getMonthName(mon)<<":";
         if (hasApp) {
-            cout << "[APPLIED] " << appStatus;
+            cout << "[APPLIED] " <<fixed<<setw(20)<< appStatus<<"\t  |";
         }
         else {
-            cout << "[  ---  ] No application";
+            cout << "[  ---  ] No application"<<fixed<<setw(20)<<"\t  |";
         }
         cout << endl;
     }
