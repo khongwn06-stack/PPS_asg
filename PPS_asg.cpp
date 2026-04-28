@@ -969,24 +969,6 @@ void renewApplication(int index)
         }
     }while(confirm != 1 && confirm != 0);
 
-    /*applications[realIndex].month = month;
-    applications[realIndex].status = STATUS_PENDING;
-	applications[realIndex].payment = STATUS_UNPAID;
-
-    ofstream file("applications.txt");
-
-    for(int i = 0; i < applicationCount; i++){
-        file << applications[i].appID << ","
-             << applications[i].studentID << ","
-             << applications[i].status << ","
-             << applications[i].month << ","
-             << applications[i].payment << endl;
-    }
-    file.close();
-    
-    loading_screen();
-    cout << "RENEW SUCCESSFUL!\n\n";*/
-    
 	Application a;
 	a.appID = applications[realIndex].appID;
 	a.studentID = students[index].id;
@@ -1530,19 +1512,6 @@ string paymentMethod(int appIndex, int studentIndex)
             break;
         }
     }
-	
-//	if(!updated){
-//        string newPassID = generatePassID();
-//
-//        Pass newPass;
-//        newPass.passID = newPassID;
-//        newPass.studentID = sid;
-//        newPass.startDate = date;
-//        newPass.endDate = applications[appIndex].month;
-//        newPass.status = STATUS_ACTIVE;
-//
-//        passes[passCount++] = newPass;
-//    }
 
 	string currentPassID = "";
 
@@ -1678,27 +1647,27 @@ void printReceiptByApp(string targetAppID, string targetStudentID)
 // Payment History
 void paymentHistory(int studentIndex)
 {
-	cout<<"\n==========================================================================================================================================="<<endl;
-	cout<<"|                                                             PAYMENT HISTORY                                                             |"<<endl;
-	cout<<"==========================================================================================================================================="<<endl;
+	cout<<"\n================================================================================================================================="<<endl;
+	cout<<"|                                                         PAYMENT HISTORY                                                       |"<<endl;
+	cout<<"================================================================================================================================="<<endl;
 	cout<<"| "<<left
 		<< setw(5) <<"No"
 		<< setw(15) <<"Payment ID"
 		<< setw(15) <<"Student ID"
 		<< setw(20) <<"Application ID"
-		<< setw(15) <<"Pass ID"
-		<< setw(10) <<"Month"
-		<< setw(25) <<"Amount(RM)" 
-		<< setw(20) <<"Method"
+		<< setw(10) <<"Pass ID"
+		<< setw(10) <<"Month" 
+		<< setw(25) <<"Method"
+		<< setw(15) <<"Amount(RM)"
 		<< setw(10) <<"Date" <<" |"<<endl;
-	cout<<"|-----------------------------------------------------------------------------------------------------------------------------------------|"<<endl;
+	cout<<"|-------------------------------------------------------------------------------------------------------------------------------|"<<endl;
 	
 	string sid = students[studentIndex].id;
 	ifstream file("payments.txt");
 	
 	if(!file){
-		cout<<"|                                               --NO PAYMENT HISTORY FOUND!--                                                             |"<<endl;
-		cout<<"===========================================================================================================================================\n"<<endl;
+		cout<<"|                                                --NO PAYMENT HISTORY FOUND!--                                                  |"<<endl;
+		cout<<"=================================================================================================================================\n"<<endl;
 		return;
 	}
 
@@ -1709,15 +1678,15 @@ void paymentHistory(int studentIndex)
 	while(getline(file, line)){
 		
 		stringstream ss(line);
-		string pid, studentID, appID, passID, month, amount, method, date;
+		string pid, studentID, appID, passID, month, method, amount, date;
 		
 		getline(ss, pid, ',');
 		getline(ss, studentID, ',');
 		getline(ss, appID, ',');
 		getline(ss, passID, ',');
 		getline(ss, month, ',');
-		getline(ss, amount, ',');
 		getline(ss, method, ',');
+		getline(ss, amount, ',');
 		getline(ss, date, ',');
 		
 		if(studentID == sid){
@@ -1728,18 +1697,18 @@ void paymentHistory(int studentIndex)
 				<<setw(15)<<pid
                 <<setw(15)<<studentID
                 <<setw(20)<<appID
-                <<setw(15)<<passID
+                <<setw(10)<<passID
                 <<setw(10)<<month
-                <<setw(25)<<amount
-                <<setw(20)<<method
+                <<setw(25)<<method
+                <<setw(15)<<amount
                 <<setw(10)<<date <<" |"<<endl;
 		}
 	}
 	
 	if(!found){
-		cout<<"|                                             --NO RECORDS FOUND!--                                                |"<<endl;
+		cout<<"|                                                  --NO RECORDS FOUND!--                                                        |"<<endl;
 	}
-	cout<<"===========================================================================================================================================\n"<<endl;
+	cout<<"=================================================================================================================================\n"<<endl;
 	file.close();
 }
 
@@ -1985,7 +1954,7 @@ void viewTransactionsByMonth(int studentIndex)
         return;
     }
     cout << "\n===================================================";
-    cout << "\n|\t    Transactions for" << targetMonth << "\t\t  |\n";
+    cout << "\n|\t    Transactions for " << targetMonth << "\t\t |\n";
     cout << "===================================================" << endl;
 
     cout << "|\t " << left
@@ -2406,27 +2375,9 @@ string generatePassID()
 // Create parking pass (passes.txt)
 void createPass(string studentID, string startDate)
 {
-//	// ensure format is YYYY-MM-DD
-//	if(startDate.length() != 10 || startDate[4] != '-' || startDate[7] != '-'){
-//	    cout << "ERROR: Invalid date format in createPass()\n";
-//	    return;
-//	}
-
 	ofstream outFile("passes.txt", ios::app);
     string passID = generatePassID();
     string endDate = addOneMonth(startDate);
-
-//    int year = stringToInt(startDate.substr(0,4));
-//    int month = stringToInt(startDate.substr(5,2));
-//
-//    month += 1;
-//
-//    while(month > 12){
-//        month -= 12;
-//        year++;
-//    }
-//
-//	string endDate = intToString(year) + "-" + (month < 10 ? "0" : "") + intToString(month) + "-01";
 	        
     // into struct
     passes[passCount].passID = passID;
@@ -2618,10 +2569,6 @@ void passUsageRate()
             int eMonth = stringToInt(passes[i].endDate.substr(5,2));
             int eDay = stringToInt(passes[i].endDate.substr(8,2));
 
-            // check expiry (simple logic: expired if year/month before current)
-//            bool expired = (eYear < curY) ||
-//                           (eYear == curY && eMonth < curM) ||
-//                           (eYear == curY && eMonth == curM && eDay < curD);
 			bool active = (eYear > curY) ||
               (eYear == curY && eMonth >= curM);
 
@@ -2753,4 +2700,3 @@ void monthlyIncome()
     }
     return;
 }
-
