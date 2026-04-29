@@ -1227,7 +1227,7 @@ void viewSpendingAnalysis(int studentIndex)
     cout << "===================================================" << endl;
 
     string sid = students[studentIndex].id;
-    cout << "|  Student : " <<fixed<<setw(10)<<left<< students[studentIndex].name << " (" << sid << ")\t\t  |\n";
+    cout << "|  Student : " <<fixed<<setw(18)<<left<< students[studentIndex].name << " (" << sid << ")\t\t  |\n";
     cout << "|  Faculty : " <<fixed<<setw(20)<<left<< students[studentIndex].faculty <<"\t\t  |"<< endl;
 
     // Count applications by status
