@@ -1400,22 +1400,26 @@ void myBilling(int studentIndex)
 
     // User choose 
     int choice;
-    
-    while(true){
-    	cout<<"Select No (0 to exit): ";
-    	cin>>choice;
-    	
-    	if(!cin.fail()) break;
-    	
-    	limit_input();
-    	cout<<"\nInvalid input! Please enter the number from the 'No' column only.\n"<<endl;
-	}
+
+	while(true){
+    cout<<"Select No (0 to exit): ";
+    cin>>choice;
+
+    if(cin.fail()){
+        limit_input();
+        cout<<"\nInvalid input! Please enter the number from the 'No' column only.\n"<<endl;
+        continue;
+    }
 
     if(choice == 0) return;
+
     if(choice < 1 || choice > count){
-        cout<<"Invalid selection!"<<endl;
-        return;
+        cout<<"\nInvalid input! Please enter the number from the 'No' column only.\n"<<endl;
+        continue;
     }
+
+    break; 
+	}
 
     int i = list[choice - 1];
 
